@@ -82,11 +82,16 @@
                 <!-- Academics -->
                 <a
                     href="{% url 'course_list' %}"
-                    class="block px-4 py-3 rounded-lg hover:bg-blue-800 mb-2">
+                    class="block px-4 py-3 rounded-lg mb-2
+                    {% if request.resolver_match.url_name == 'course_list' or request.resolver_match.url_name == 'subject_list' %}
+                        bg-blue-800
+                    {% else %}
+                        hover:bg-blue-800
+                    {% endif %}">
 
                     <i class="fa fa-graduation-cap mr-2"
-                       style="font-size:20px"
-                       aria-hidden="true"></i>
+                    style="font-size:20px"
+                    aria-hidden="true"></i>
 
                     Academics
 
