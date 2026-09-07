@@ -4,112 +4,499 @@
 
 {% block content %}
 
-<div class="flex items-center justify-between mb-6">
-    <div>
-        <h3 class="text-lg font-semibold text-slate-800">All Students</h3>
-        <p class="text-sm text-slate-500">Manage student records</p>
+<div class="w-full max-w-7xl mx-auto">
+
+
+<!-- Page Header -->
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+
+    <div class="min-w-0">
+        <h2 class="text-2xl sm:text-3xl font-bold text-slate-800">
+            Students
+        </h2>
+
+        <p class="text-sm sm:text-base text-slate-500 mt-1">
+            Manage and view all registered students.
+        </p>
     </div>
 
-    <a href="{% url 'student_create' %}"
-       class="bg-blue-900 hover:bg-blue-800 text-white px-4 py-2 rounded-lg text-sm font-medium">
-        <i class="fa fa-plus mr-1" aria-hidden="true"></i>
-        Add New Student
+    <a
+        href="{% url 'student_create' %}"
+        class="w-full sm:w-auto
+               inline-flex items-center justify-center gap-2
+               bg-blue-900 text-white
+               px-4 py-2.5
+               rounded-lg
+               font-medium
+               hover:bg-blue-800
+               transition
+               focus:outline-none
+               focus:ring-2
+               focus:ring-blue-500
+               focus:ring-offset-2">
+        <i class="fa fa-plus" aria-hidden="true"></i>
+        Add Student
     </a>
 </div>
 
-<form method="get" class="bg-white border border-slate-200 rounded-lg shadow-sm p-4 mb-6 flex flex-wrap items-end gap-4">
 
-    <div class="flex-1 min-w-[220px]">
-        <label class="block text-xs font-medium text-slate-500 mb-1">Search</label>
-        <div class="relative">
-            <i class="fa fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm" aria-hidden="true"></i>
-            <input
-                type="text"
-                name="search"
-                value="{{ search_query }}"
-                placeholder="Search by name or email"
-                class="w-full pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
+<!-- Search / Filter Area -->
+<form
+    method="get"
+    class="bg-white rounded-xl border border-slate-200 shadow-sm
+           p-4 sm:p-5 mb-6">
+
+    <div class="flex flex-col md:flex-row md:items-end gap-3 sm:gap-4">
+
+        <!-- Search -->
+        <div class="relative flex-1 min-w-0">
+
+            <label class="block text-xs font-medium text-slate-500 mb-1">
+                Search
+            </label>
+
+            <div class="relative">
+                <i
+                    class="fa fa-search absolute left-4 top-1/2
+                           -translate-y-1/2 text-slate-400"
+                    aria-hidden="true">
+                </i>
+
+                <input
+                    type="text"
+                    name="search"
+                    value="{{ search_query }}"
+                    placeholder="Search by name or email"
+                    class="w-full
+                           pl-11 pr-4
+                           py-2.5
+                           border border-slate-200
+                           rounded-lg
+                           text-sm sm:text-base
+                           text-slate-700
+                           placeholder-slate-400
+                           bg-white
+                           outline-none
+                           transition
+                           focus:ring-2
+                           focus:ring-blue-500
+                           focus:border-blue-500">
+            </div>
         </div>
-    </div>
 
-    <div class="min-w-[200px]">
-        <label class="block text-xs font-medium text-slate-500 mb-1">Course</label>
-        <select
-            name="course"
-            class="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-        >
-            <option value="">All Courses</option>
-            {% for course in courses %}
-                <option value="{{ course.id }}" {% if selected_course == course.id|stringformat:"s" %}selected{% endif %}>
-                    {{ course.name }}
-                </option>
-            {% endfor %}
-        </select>
-    </div>
 
-    <div class="flex items-center gap-3">
-        <button type="submit"
-                class="bg-blue-900 hover:bg-blue-800 text-white px-4 py-2 rounded-lg text-sm font-medium">
-            <i class="fa fa-filter mr-1" aria-hidden="true"></i>
-            Filter
-        </button>
+        <!-- Course Filter -->
+        <div class="w-full md:w-56">
 
-        {% if filters_applied %}
-            <a href="{% url 'student_list' %}" class="text-sm text-slate-500 hover:text-blue-900">
-                Clear filters
-            </a>
-        {% endif %}
+            <label class="block text-xs font-medium text-slate-500 mb-1">
+                Course
+            </label>
+
+            <select
+                name="course"
+                class="w-full
+                       px-4 py-2.5
+                       border border-slate-200
+                       rounded-lg
+                       bg-white
+                       text-sm sm:text-base
+                       text-slate-600
+                       outline-none
+                       transition
+                       focus:ring-2
+                       focus:ring-blue-500
+                       focus:border-blue-500">
+
+                <option value="">All Courses</option>
+
+                {% for course in courses %}
+                    <option
+                        value="{{ course.id }}"
+                        {% if selected_course == course.id|stringformat:"s" %}selected{% endif %}>
+                        {{ course.name }}
+                    </option>
+                {% endfor %}
+
+            </select>
+        </div>
+
+
+        <!-- Filter + Clear -->
+        <div class="flex items-center gap-3">
+
+            <button
+                type="submit"
+                class="inline-flex items-center justify-center gap-2
+                       bg-blue-900
+                       hover:bg-blue-800
+                       text-white
+                       px-4 py-2.5
+                       rounded-lg
+                       text-sm
+                       font-medium
+                       transition
+                       focus:outline-none
+                       focus:ring-2
+                       focus:ring-blue-500
+                       focus:ring-offset-2">
+
+                <i class="fa fa-filter" aria-hidden="true"></i>
+                Filter
+            </button>
+
+            {% if filters_applied %}
+                <a
+                    href="{% url 'student_list' %}"
+                    class="text-sm text-slate-500
+                           hover:text-blue-900
+                           whitespace-nowrap">
+                    Clear filters
+                </a>
+            {% endif %}
+
+        </div>
+
     </div>
 </form>
 
-<div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+
+<!-- Students Table Card -->
+<div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+
+    <!-- Table Header -->
+    <div class="px-5 py-5 sm:px-6 sm:py-6 border-b border-slate-200">
+
+        <h3 class="text-lg font-semibold text-slate-800">
+            Student List
+        </h3>
+
+        <p class="text-sm text-slate-500 mt-1">
+            All students currently registered in the system.
+        </p>
+
+    </div>
+
+
     {% if students %}
-        <table class="w-full text-sm">
-            <thead class="bg-slate-50 border-b border-slate-200">
-                <tr>
-                    <th class="text-left px-6 py-3 font-medium text-slate-500">Name</th>
-                    <th class="text-left px-6 py-3 font-medium text-slate-500">Email</th>
-                    <th class="text-left px-6 py-3 font-medium text-slate-500">Phone</th>
-                    <th class="text-left px-6 py-3 font-medium text-slate-500">Course</th>
-                    <th class="text-right px-6 py-3 font-medium text-slate-500">Actions</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-100">
-                {% for student in students %}
-                <tr class="hover:bg-slate-50">
-                    <td class="px-6 py-3 text-slate-800 font-medium">{{ student.name }}</td>
-                    <td class="px-6 py-3 text-slate-600">{{ student.email }}</td>
-                    <td class="px-6 py-3 text-slate-600">{{ student.phone }}</td>
-                    <td class="px-6 py-3 text-slate-600">{{ student.course.name }}</td>
-                    <td class="px-6 py-3 text-right">
-                        <a href="{% url 'student_update' student.id %}"
-                           class="inline-block text-blue-900 hover:text-blue-700 mr-4">
-                            <i class="fa fa-pencil" aria-hidden="true"></i>
-                        </a>
-                        <a href="{% url 'student_delete' student.id %}"
-                           class="inline-block text-red-600 hover:text-red-700">
-                            <i class="fa fa-trash" aria-hidden="true"></i>
-                        </a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <div class="p-12 text-center text-slate-500">
-            {% if filters_applied %}
-                <i class="fa fa-search text-3xl text-slate-300 mb-3" aria-hidden="true"></i>
-                <p class="mb-2">No students match your search/filter.</p>
-                <a href="{% url 'student_list' %}" class="text-blue-900 hover:underline text-sm">
-                    Clear filters
-                </a>
-            {% else %}
-                <i class="fa fa-users text-3xl text-slate-300 mb-3" aria-hidden="true"></i>
-                <p>No students found.</p>
-            {% endif %}
+
+        <!-- Responsive Table -->
+        <div class="overflow-x-auto">
+
+            <table class="w-full min-w-[820px] text-left">
+
+                <thead class="bg-slate-50 border-b border-slate-200">
+
+                    <tr>
+
+                        <th class="px-5 sm:px-6 py-3.5
+                                   text-xs sm:text-sm
+                                   font-semibold text-slate-500
+                                   whitespace-nowrap">
+                            ID
+                        </th>
+
+                        <th class="px-5 sm:px-6 py-3.5
+                                   text-xs sm:text-sm
+                                   font-semibold text-slate-500
+                                   whitespace-nowrap">
+                            Name
+                        </th>
+
+                        <th class="px-5 sm:px-6 py-3.5
+                                   text-xs sm:text-sm
+                                   font-semibold text-slate-500
+                                   whitespace-nowrap">
+                            Email
+                        </th>
+
+                        <th class="px-5 sm:px-6 py-3.5
+                                   text-xs sm:text-sm
+                                   font-semibold text-slate-500
+                                   whitespace-nowrap">
+                            Phone
+                        </th>
+
+                        <th class="px-5 sm:px-6 py-3.5
+                                   text-xs sm:text-sm
+                                   font-semibold text-slate-500
+                                   whitespace-nowrap">
+                            Course
+                        </th>
+
+                        <th class="px-5 sm:px-6 py-3.5
+                                   text-xs sm:text-sm
+                                   font-semibold text-slate-500
+                                   text-center
+                                   whitespace-nowrap">
+                            Actions
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody class="divide-y divide-slate-100">
+
+                    {% for student in students %}
+
+                    <tr class="hover:bg-slate-50 transition">
+
+                        <!-- ID -->
+                        <td class="px-5 sm:px-6 py-4
+                                   text-sm text-slate-500
+                                   whitespace-nowrap">
+                            #{{ student.id }}
+                        </td>
+
+
+                        <!-- Name -->
+                        <td class="px-5 sm:px-6 py-4">
+
+                            <div class="flex items-center gap-3 min-w-[170px]">
+
+                                <div
+                                    class="w-9 h-9 rounded-full
+                                           bg-blue-100
+                                           text-blue-900
+                                           flex items-center
+                                           justify-center
+                                           font-semibold
+                                           flex-shrink-0">
+
+                                    {{ student.name|first|upper }}
+
+                                </div>
+
+                                <span class="font-medium text-slate-800 truncate">
+                                    {{ student.name }}
+                                </span>
+
+                            </div>
+
+                        </td>
+
+
+                        <!-- Email -->
+                        <td class="px-5 sm:px-6 py-4
+                                   text-sm text-slate-600
+                                   whitespace-nowrap">
+                            {{ student.email }}
+                        </td>
+
+
+                        <!-- Phone -->
+                        <td class="px-5 sm:px-6 py-4
+                                   text-sm text-slate-600
+                                   whitespace-nowrap">
+                            {{ student.phone }}
+                        </td>
+
+
+                        <!-- Course -->
+                        <td class="px-5 sm:px-6 py-4">
+
+                            <span
+                                class="inline-flex items-center
+                                       px-3 py-1
+                                       text-xs sm:text-sm
+                                       font-medium
+                                       bg-blue-50
+                                       text-blue-700
+                                       rounded-full
+                                       whitespace-nowrap">
+
+                                {{ student.course.name }}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- Actions -->
+                        <td class="px-5 sm:px-6 py-4">
+
+                            <div class="flex items-center
+                                        justify-center
+                                        gap-2
+                                        whitespace-nowrap">
+
+                                <!-- Edit -->
+                                <a
+                                    href="{% url 'student_update' student.id %}"
+                                    class="inline-flex items-center
+                                           justify-center gap-1.5
+                                           px-3 py-2
+                                           rounded-lg
+                                           text-blue-700
+                                           bg-blue-50
+                                           text-sm
+                                           font-medium
+                                           hover:bg-blue-100
+                                           transition
+                                           focus:outline-none
+                                           focus:ring-2
+                                           focus:ring-blue-500
+                                           focus:ring-offset-1">
+
+                                    <i class="fa fa-pencil"
+                                       aria-hidden="true"></i>
+
+                                    <span>Edit</span>
+
+                                </a>
+
+
+                                <!-- Delete -->
+                                <a
+                                    href="{% url 'student_delete' student.id %}"
+                                    class="inline-flex items-center
+                                           justify-center gap-1.5
+                                           px-3 py-2
+                                           rounded-lg
+                                           text-red-600
+                                           bg-red-50
+                                           text-sm
+                                           font-medium
+                                           hover:bg-red-100
+                                           transition
+                                           focus:outline-none
+                                           focus:ring-2
+                                           focus:ring-red-500
+                                           focus:ring-offset-1">
+
+                                    <i class="fa fa-trash"
+                                       aria-hidden="true"></i>
+
+                                    <span>Delete</span>
+
+                                </a>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
         </div>
+
+
+        <!-- Mobile Table Hint -->
+        <div
+            class="sm:hidden px-5 py-3
+                   border-t border-slate-100
+                   bg-slate-50">
+
+            <p class="text-xs text-slate-400 text-center">
+
+                <i class="fa fa-arrows-h mr-1" aria-hidden="true"></i>
+
+                Swipe horizontally to view the full table.
+
+            </p>
+
+        </div>
+
+
+    {% else %}
+
+        <!-- Empty State -->
+        <div class="px-5 py-12 sm:px-6 sm:py-14 text-center">
+
+            <div
+                class="w-14 h-14 mx-auto mb-4
+                       rounded-full
+                       bg-slate-100
+                       flex items-center justify-center">
+
+                {% if filters_applied %}
+                    <i
+                        class="fa fa-search text-2xl text-slate-400"
+                        aria-hidden="true">
+                    </i>
+                {% else %}
+                    <i
+                        class="fa fa-users text-2xl text-slate-400"
+                        aria-hidden="true">
+                    </i>
+                {% endif %}
+
+            </div>
+
+
+            {% if filters_applied %}
+
+                <h3 class="text-lg font-semibold text-slate-800">
+                    No students match your search/filter
+                </h3>
+
+                <p class="text-sm sm:text-base text-slate-500
+                          mt-1 mb-5 max-w-md mx-auto">
+                    Try changing your search or course filter.
+                </p>
+
+                <a
+                    href="{% url 'student_list' %}"
+                    class="inline-flex items-center
+                           justify-center gap-2
+                           text-blue-900
+                           hover:text-blue-700
+                           font-medium
+                           text-sm">
+
+                    <i class="fa fa-times" aria-hidden="true"></i>
+                    Clear filters
+
+                </a>
+
+            {% else %}
+
+                <h3 class="text-lg font-semibold text-slate-800">
+                    No students found
+                </h3>
+
+                <p class="text-sm sm:text-base text-slate-500
+                          mt-1 mb-5 max-w-md mx-auto">
+                    There are currently no students registered.
+                </p>
+
+                <a
+                    href="{% url 'student_create' %}"
+                    class="w-full sm:w-auto
+                           inline-flex items-center
+                           justify-center gap-2
+                           bg-blue-900
+                           text-white
+                           px-4 py-2.5
+                           rounded-lg
+                           font-medium
+                           hover:bg-blue-800
+                           transition
+                           focus:outline-none
+                           focus:ring-2
+                           focus:ring-blue-500
+                           focus:ring-offset-2">
+
+                    <i class="fa fa-plus" aria-hidden="true"></i>
+                    Add First Student
+
+                </a>
+
+            {% endif %}
+
+        </div>
+
     {% endif %}
+
+</div>
+
+
 </div>
 
 {% endblock %}

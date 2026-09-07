@@ -6,237 +6,483 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Student Management System</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-slate-50">
+<body class="bg-slate-50 text-slate-800">
 
     <div class="flex min-h-screen">
 
-        <!-- Sidebar -->
-        <aside class="w-64 bg-blue-900 text-white">
+        <!-- ==================== SIDEBAR ==================== -->
+        <aside class="hidden md:flex md:w-64 lg:w-64
+                      flex-shrink-0
+                      bg-blue-900 text-white
+                      flex-col">
 
             <!-- Logo / Title -->
             <div class="p-6 border-b border-blue-800">
+
                 <h1 class="text-xl font-bold">
                     Student Management
                 </h1>
+
                 <p class="text-sm text-blue-200 mt-1">
                     Admin Panel
                 </p>
+
             </div>
 
+
             <!-- Navigation -->
-<nav class="p-4 border-b border-blue-800">
+            <nav class="p-4 flex-1">
 
-<a href="{% url 'dashboard' %}"
-   class="block px-4 py-3 rounded-lg mb-2
-   {% if request.resolver_match.url_name == 'dashboard' %}
-       bg-blue-800
-   {% else %}
-       hover:bg-blue-800
-   {% endif %}">
+                <!-- Dashboard -->
+                <a
+                    href="{% url 'dashboard' %}"
+                    class="block px-4 py-3 rounded-lg mb-2
+                    {% if request.resolver_match.url_name == 'dashboard' %}
+                        bg-blue-800
+                    {% else %}
+                        hover:bg-blue-800
+                    {% endif %}">
 
-    <i class="fa fa-home mr-1" style="font-size:20px" aria-hidden="true"></i>
-    Dashboard
+                    <i class="fa fa-home mr-2"
+                       style="font-size:20px"
+                       aria-hidden="true"></i>
 
-</a>
-<a href="{% url 'logout' %}"
-   class="block px-4 py-3 rounded-lg hover:bg-blue-800">
+                    Dashboard
 
-    <i class="fa fa-sign-out mr-1"
-       style="font-size:20px"
-       aria-hidden="true"></i>
-
-    Logout
-
-</a>
-
-<a href="{% url 'student_list' %}"
-   class="block px-4 py-3 rounded-lg mb-2
-   {% if request.resolver_match.url_name == 'student_list' %}
-       bg-blue-800
-   {% else %}
-       hover:bg-blue-800
-   {% endif %}">
-
-    <i class="fa fa-users mr-1" style="font-size:20px" aria-hidden="true"></i>
-    Students
-
-</a>
+                </a>
 
 
-<a href="#" class="block px-4 py-3 rounded-lg hover:bg-blue-800 mb-2">
+                <!-- Students -->
+                <a
+                    href="{% url 'student_list' %}"
+                    class="block px-4 py-3 rounded-lg mb-2
+                    {% if request.resolver_match.url_name == 'student_list' %}
+                        bg-blue-800
+                    {% else %}
+                        hover:bg-blue-800
+                    {% endif %}">
 
-    <i class="fa fa-graduation-cap mr-1"
-       style="font-size:20px"
-       aria-hidden="true"></i>
+                    <i class="fa fa-users mr-2"
+                       style="font-size:20px"
+                       aria-hidden="true"></i>
 
-    Academics
+                    Students
 
-</a>
-
-
-<a href="#" class="block px-4 py-3 rounded-lg hover:bg-blue-800 mb-2">
-
-    <i class="fa fa-calendar-check-o mr-1"
-       style="font-size:20px"
-       aria-hidden="true"></i>
-
-    Attendance
-
-</a>
+                </a>
 
 
-<a href="#" class="block px-4 py-3 rounded-lg hover:bg-blue-800 mb-2">
+                <!-- Academics -->
+                <a
+                    href="#"
+                    class="block px-4 py-3 rounded-lg hover:bg-blue-800 mb-2">
 
-    <i class="fa fa-credit-card mr-1"
-       style="font-size:20px"
-       aria-hidden="true"></i>
+                    <i class="fa fa-graduation-cap mr-2"
+                       style="font-size:20px"
+                       aria-hidden="true"></i>
 
-    Fees
+                    Academics
 
-</a>
-
-
-<a href="#" class="block px-4 py-3 rounded-lg hover:bg-blue-800 mb-2">
-
-    <i class="fa fa-money mr-1"
-       style="font-size:20px"
-       aria-hidden="true"></i>
-
-    Payments
-
-</a>
+                </a>
 
 
-<a href="#" class="block px-4 py-3 rounded-lg hover:bg-blue-800 mb-2">
+                <!-- Attendance -->
+                <a
+                    href="#"
+                    class="block px-4 py-3 rounded-lg hover:bg-blue-800 mb-2">
 
-    <i class="fa fa-bullhorn mr-1"
-       style="font-size:20px"
-       aria-hidden="true"></i>
+                    <i class="fa fa-calendar-check-o mr-2"
+                       style="font-size:20px"
+                       aria-hidden="true"></i>
 
-    Notices
+                    Attendance
 
-</a>
+                </a>
 
-    <a href="#" class="block px-4 py-3 rounded-lg hover:bg-blue-800 mb-2">
-        <i class="fa fa-graduation-cap mr-1" style="font-size:20px" aria-hidden="true"></i>
-        Academics
-    </a>
 
-    <a href="#" class="block px-4 py-3 rounded-lg hover:bg-blue-800 mb-2">
-        <i class="fa fa-calendar-check-o mr-1" style="font-size:20px" aria-hidden="true"></i>
-        Attendance
-    </a>
+                <!-- Fees -->
+                <a
+                    href="#"
+                    class="block px-4 py-3 rounded-lg hover:bg-blue-800 mb-2">
 
-    <a href="#" class="block px-4 py-3 rounded-lg hover:bg-blue-800 mb-2">
-        <i class="fa fa-credit-card mr-1" style="font-size:20px" aria-hidden="true"></i>
-        Fees
-    </a>
+                    <i class="fa fa-credit-card mr-2"
+                       style="font-size:20px"
+                       aria-hidden="true"></i>
 
-    <a href="#" class="block px-4 py-3 rounded-lg hover:bg-blue-800 mb-2">
-        <i class="fa fa-money mr-1" style="font-size:20px" aria-hidden="true"></i>
-        Payments
-    </a>
+                    Fees
 
-    <a href="#" class="block px-4 py-3 rounded-lg hover:bg-blue-800 mb-2">
-        <i class="fa fa-bullhorn mr-1" style="font-size:20px" aria-hidden="true"></i>
-        Notices
-    </a>
+                </a>
 
-    <a href="#" class="block px-4 py-3 rounded-lg hover:bg-blue-800 mb-2">
-        <i class="fa fa-bar-chart mr-1" style="font-size:20px" aria-hidden="true"></i>
-        Reports
-    </a>
 
-</nav>
+                <!-- Payments -->
+                <a
+                    href="#"
+                    class="block px-4 py-3 rounded-lg hover:bg-blue-800 mb-2">
+
+                    <i class="fa fa-money mr-2"
+                       style="font-size:20px"
+                       aria-hidden="true"></i>
+
+                    Payments
+
+                </a>
+
+
+                <!-- Notices -->
+                <a
+                    href="#"
+                    class="block px-4 py-3 rounded-lg hover:bg-blue-800 mb-2">
+
+                    <i class="fa fa-bullhorn mr-2"
+                       style="font-size:20px"
+                       aria-hidden="true"></i>
+
+                    Notices
+
+                </a>
+
+
+                <!-- Reports -->
+                <a
+                    href="#"
+                    class="block px-4 py-3 rounded-lg hover:bg-blue-800 mb-2">
+
+                    <i class="fa fa-bar-chart mr-2"
+                       style="font-size:20px"
+                       aria-hidden="true"></i>
+
+                    Reports
+
+                </a>
+
+            </nav>
+
+
+            <!-- Logout -->
+            <nav class="p-4 border-t border-blue-800">
+
+                <a
+                    href="{% url 'logout' %}"
+                    class="block px-4 py-3 rounded-lg hover:bg-blue-800">
+
+                    <i class="fa fa-sign-out mr-2"
+                       style="font-size:20px"
+                       aria-hidden="true"></i>
+
+                    Logout
+
+                </a>
+
+            </nav>
+
         </aside>
 
 
-        <!-- Main area -->
-        <div class="flex-1">
-
-            <!-- Top navbar -->
-<header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6">
-
-    <!-- Left side -->
-    <div class="flex items-center">
-        <h2 class="text-xl font-semibold text-slate-800">
-             {% block page_title %}Dashboard{% endblock %}
-        </h2>
-    </div>
+        <!-- ==================== MAIN AREA ==================== -->
+        <div class="flex-1 min-w-0">
 
 
-    <!-- Right side -->
-    <div class="flex items-center gap-5">
+            <!-- ==================== TOP NAVBAR ==================== -->
+            <header
+                class="min-h-16 bg-white border-b border-slate-200
+                       flex items-center justify-between
+                       px-4 sm:px-6 py-3 gap-3">
 
-        <!-- Search -->
-        <div class="relative pl-4 pr-4 py-1 text-sm border border-slate-200 rounded-lg
-            focus-within:ring-1 focus-within:ring-blue-500">
+                <!-- Left Side -->
+                <div class="flex items-center gap-3 min-w-0">
 
-    <i class="fa fa-search text-gray-500 text-lg" aria-hidden="true"></i>
+                    <!-- Mobile Navigation -->
+                    <div class="md:hidden">
 
-    <input
-        type="text"
-        placeholder="Search..."
-        class="w-64 pl-4 pr-4 py-2 text-sm border-none outline-none"
-    >
-</div>
+                        <details class="relative">
 
+                            <summary
+                                class="list-none cursor-pointer
+                                       w-10 h-10
+                                       rounded-lg
+                                       bg-blue-900 text-white
+                                       flex items-center justify-center
+                                       hover:bg-blue-800">
 
-        <!-- Notification -->
-        <button
-            class="relative p-2 text-slate-500 hover:text-blue-900 hover:bg-slate-100 rounded-lg">
+                                <i class="fa fa-bars"
+                                   aria-hidden="true"></i>
 
-            <i class="fa fa-bell" aria-hidden="true"></i>
-
-            <!-- Notification badge -->
-            <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-
-        </button>
-
-
-        <!-- Divider -->
-        <div class="h-8 w-px bg-slate-200"></div>
+                            </summary>
 
 
-        <!-- User -->
-        <div class="flex items-center gap-3">
+                            <!-- Mobile Menu -->
+                            <div
+                                class="absolute left-0 top-12
+                                       w-52
+                                       bg-white
+                                       border border-slate-200
+                                       rounded-xl
+                                       shadow-lg
+                                       p-2
+                                       z-50">
 
-            <div class="text-right">
-                <p class="text-sm font-medium text-slate-800">
-                    Admin
-                </p>
+                                <a
+                                    href="{% url 'dashboard' %}"
+                                    class="flex items-center gap-3
+                                           px-3 py-2.5
+                                           rounded-lg
+                                           text-slate-700
+                                           hover:bg-slate-100">
 
-                <p class="text-xs text-slate-500">
-                    Administrator
-                </p>
-            </div>
+                                    <i class="fa fa-home w-5 text-center"></i>
+                                    Dashboard
 
-            <div class="w-9 h-9 rounded-full bg-blue-900 text-white 
-                        flex items-center justify-center font-medium">
-                A
-            </div>
+                                </a>
 
-        </div>
 
-    </div>
+                                <a
+                                    href="{% url 'student_list' %}"
+                                    class="flex items-center gap-3
+                                           px-3 py-2.5
+                                           rounded-lg
+                                           text-slate-700
+                                           hover:bg-slate-100">
 
-</header>
+                                    <i class="fa fa-users w-5 text-center"></i>
+                                    Students
 
-      
-            <!-- Page content -->
-            <main class="p-6">
-              {% block content %}
-              {% endblock %}
+                                </a>
+
+
+                                <a
+                                    href="#"
+                                    class="flex items-center gap-3
+                                           px-3 py-2.5
+                                           rounded-lg
+                                           text-slate-700
+                                           hover:bg-slate-100">
+
+                                    <i class="fa fa-graduation-cap w-5 text-center"></i>
+                                    Academics
+
+                                </a>
+
+
+                                <a
+                                    href="#"
+                                    class="flex items-center gap-3
+                                           px-3 py-2.5
+                                           rounded-lg
+                                           text-slate-700
+                                           hover:bg-slate-100">
+
+                                    <i class="fa fa-calendar-check-o w-5 text-center"></i>
+                                    Attendance
+
+                                </a>
+
+
+                                <a
+                                    href="#"
+                                    class="flex items-center gap-3
+                                           px-3 py-2.5
+                                           rounded-lg
+                                           text-slate-700
+                                           hover:bg-slate-100">
+
+                                    <i class="fa fa-credit-card w-5 text-center"></i>
+                                    Fees
+
+                                </a>
+
+
+                                <a
+                                    href="#"
+                                    class="flex items-center gap-3
+                                           px-3 py-2.5
+                                           rounded-lg
+                                           text-slate-700
+                                           hover:bg-slate-100">
+
+                                    <i class="fa fa-money w-5 text-center"></i>
+                                    Payments
+
+                                </a>
+
+
+                                <a
+                                    href="#"
+                                    class="flex items-center gap-3
+                                           px-3 py-2.5
+                                           rounded-lg
+                                           text-slate-700
+                                           hover:bg-slate-100">
+
+                                    <i class="fa fa-bullhorn w-5 text-center"></i>
+                                    Notices
+
+                                </a>
+
+
+                                <a
+                                    href="#"
+                                    class="flex items-center gap-3
+                                           px-3 py-2.5
+                                           rounded-lg
+                                           text-slate-700
+                                           hover:bg-slate-100">
+
+                                    <i class="fa fa-bar-chart w-5 text-center"></i>
+                                    Reports
+
+                                </a>
+
+
+                                <div class="border-t border-slate-200 my-2"></div>
+
+
+                                <a
+                                    href="{% url 'logout' %}"
+                                    class="flex items-center gap-3
+                                           px-3 py-2.5
+                                           rounded-lg
+                                           text-red-600
+                                           hover:bg-red-50">
+
+                                    <i class="fa fa-sign-out w-5 text-center"></i>
+                                    Logout
+
+                                </a>
+
+                            </div>
+
+                        </details>
+
+                    </div>
+
+
+                    <!-- Page Title -->
+                    <h2
+                        class="text-lg sm:text-xl font-semibold
+                               text-slate-800 truncate">
+
+                        {% block page_title %}Dashboard{% endblock %}
+
+                    </h2>
+
+                </div>
+
+
+                <!-- Right Side -->
+                <div class="flex items-center gap-2 sm:gap-5 flex-shrink-0">
+
+
+                    <!-- Search -->
+                    <div
+                        class="hidden sm:flex
+                               items-center
+                               relative
+                               border border-slate-200
+                               rounded-lg
+                               focus-within:ring-1
+                               focus-within:ring-blue-500">
+
+                        <i
+                            class="fa fa-search
+                                   text-slate-500
+                                   ml-3"
+                            aria-hidden="true">
+                        </i>
+
+                        <input
+                            type="text"
+                            placeholder="Search..."
+                            class="w-40 lg:w-64
+                                   px-3 py-2.5
+                                   text-sm
+                                   border-none
+                                   outline-none
+                                   bg-transparent">
+
+                    </div>
+
+
+                    <!-- Notification -->
+                    <button
+                        type="button"
+                        aria-label="Notifications"
+                        class="relative
+                               p-2
+                               text-slate-500
+                               hover:text-blue-900
+                               hover:bg-slate-100
+                               rounded-lg">
+
+                        <i class="fa fa-bell"
+                           aria-hidden="true"></i>
+
+                        <span
+                            class="absolute top-1 right-1
+                                   w-2 h-2
+                                   bg-red-500
+                                   rounded-full">
+                        </span>
+
+                    </button>
+
+
+                    <!-- Divider -->
+                    <div class="hidden sm:block h-8 w-px bg-slate-200"></div>
+
+
+                    <!-- User -->
+                    <div class="flex items-center gap-2 sm:gap-3">
+
+                        <div class="hidden sm:block text-right">
+
+                            <p class="text-sm font-medium text-slate-800">
+                                Admin
+                            </p>
+
+                            <p class="text-xs text-slate-500">
+                                Administrator
+                            </p>
+
+                        </div>
+
+
+                        <div
+                            class="w-9 h-9 rounded-full
+                                   bg-blue-900 text-white
+                                   flex items-center
+                                   justify-center
+                                   font-medium">
+
+                            A
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <!-- ==================== PAGE CONTENT ==================== -->
+            <main class="p-4 sm:p-6">
+
+                {% block content %}
+                {% endblock %}
+
             </main>
 
         </div>
 
     </div>
+
 </body>
 
 </html>

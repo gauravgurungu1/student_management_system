@@ -1,0 +1,270 @@
+{% extends 'base.html' %}
+
+{% block page_title %}
+{% if form.instance.pk %}
+Edit Student
+{% else %}
+Add Student
+{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<!-- Page Header -->
+
+<div class="mb-6">
+
+
+<h2 class="text-2xl font-bold text-slate-800">
+
+    {% if form.instance.pk %}
+        Edit Student
+    {% else %}
+        Add Student
+    {% endif %}
+
+</h2>
+
+<p class="text-slate-500 mt-1">
+
+    {% if form.instance.pk %}
+        Update the student's information below.
+    {% else %}
+        Add a new student to the system.
+    {% endif %}
+
+</p>
+
+
+</div>
+
+<!-- Student Form Card -->
+
+<div class="bg-white rounded-xl border border-slate-200 shadow-sm
+            max-w-3xl overflow-hidden">
+
+
+<!-- Card Header -->
+<div class="p-5 sm:p-6 border-b border-slate-200">
+
+    <h3 class="text-lg font-semibold text-slate-800">
+        Student Information
+    </h3>
+
+    <p class="text-sm text-slate-500 mt-1">
+        Enter the student's details below.
+    </p>
+
+    <p class="text-xs text-slate-400 mt-2">
+        Please make sure all information is correct before saving.
+    </p>
+
+</div>
+
+
+<!-- Form -->
+<form method="post" class="p-5 sm:p-6">
+
+    {% csrf_token %}
+
+
+    <!-- General Form Errors -->
+    {% if form.non_field_errors %}
+    <div class="mb-6 rounded-lg border border-red-200 bg-red-50 p-4">
+
+        <div class="flex items-start gap-3">
+
+            <i class="fa fa-exclamation-circle text-red-600 mt-0.5"
+               aria-hidden="true"></i>
+
+            <div>
+                <p class="text-sm font-medium text-red-800">
+                    Please correct the following errors:
+                </p>
+
+                <ul class="mt-1 text-sm text-red-700 list-disc list-inside">
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+
+            </div>
+
+        </div>
+
+    </div>
+    {% endif %}
+
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
+
+
+        <!-- Name -->
+        <div>
+
+            <label for="{{ form.name.id_for_label }}"
+                   class="block text-sm font-medium text-slate-700 mb-2">
+
+                Name
+                <span class="text-red-500">*</span>
+
+            </label>
+
+            {{ form.name }}
+
+            {% if form.name.errors %}
+            <div class="mt-2 text-sm text-red-600">
+
+                {% for error in form.name.errors %}
+                    <p class="flex items-start gap-1.5">
+                        <i class="fa fa-exclamation-circle mt-0.5"
+                           aria-hidden="true"></i>
+                        <span>{{ error }}</span>
+                    </p>
+                {% endfor %}
+
+            </div>
+            {% endif %}
+
+        </div>
+
+
+        <!-- Email -->
+        <div>
+
+            <label for="{{ form.email.id_for_label }}"
+                   class="block text-sm font-medium text-slate-700 mb-2">
+
+                Email
+                <span class="text-red-500">*</span>
+
+            </label>
+
+            {{ form.email }}
+
+            {% if form.email.errors %}
+            <div class="mt-2 text-sm text-red-600">
+
+                {% for error in form.email.errors %}
+                    <p class="flex items-start gap-1.5">
+                        <i class="fa fa-exclamation-circle mt-0.5"
+                           aria-hidden="true"></i>
+                        <span>{{ error }}</span>
+                    </p>
+                {% endfor %}
+
+            </div>
+            {% endif %}
+
+        </div>
+
+
+        <!-- Phone -->
+        <div>
+
+            <label for="{{ form.phone.id_for_label }}"
+                   class="block text-sm font-medium text-slate-700 mb-2">
+
+                Phone
+                <span class="text-red-500">*</span>
+
+            </label>
+
+            {{ form.phone }}
+
+            {% if form.phone.errors %}
+            <div class="mt-2 text-sm text-red-600">
+
+                {% for error in form.phone.errors %}
+                    <p class="flex items-start gap-1.5">
+                        <i class="fa fa-exclamation-circle mt-0.5"
+                           aria-hidden="true"></i>
+                        <span>{{ error }}</span>
+                    </p>
+                {% endfor %}
+
+            </div>
+            {% endif %}
+
+        </div>
+
+
+        <!-- Course -->
+        <div>
+
+            <label for="{{ form.course.id_for_label }}"
+                   class="block text-sm font-medium text-slate-700 mb-2">
+
+                Course
+                <span class="text-red-500">*</span>
+
+            </label>
+
+            {{ form.course }}
+
+            {% if form.course.errors %}
+            <div class="mt-2 text-sm text-red-600">
+
+                {% for error in form.course.errors %}
+                    <p class="flex items-start gap-1.5">
+                        <i class="fa fa-exclamation-circle mt-0.5"
+                           aria-hidden="true"></i>
+                        <span>{{ error }}</span>
+                    </p>
+                {% endfor %}
+
+            </div>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- Buttons -->
+    <div class="flex flex-col-reverse sm:flex-row
+                items-stretch sm:items-center justify-end
+                gap-3 mt-8 pt-6 border-t border-slate-200">
+
+        <a
+            href="{% url 'student_list' %}"
+            class="inline-flex items-center justify-center gap-2
+                   px-4 py-2.5 border border-slate-200
+                   rounded-lg text-slate-600 font-medium
+                   hover:bg-slate-50 transition
+                   focus:outline-none focus:ring-2
+                   focus:ring-slate-300">
+
+            <i class="fa fa-arrow-left" aria-hidden="true"></i>
+            Cancel
+
+        </a>
+
+
+        <button
+            type="submit"
+            class="inline-flex items-center justify-center gap-2
+                   px-5 py-2.5 bg-blue-900 text-white
+                   rounded-lg font-medium
+                   hover:bg-blue-800 transition
+                   focus:outline-none focus:ring-2
+                   focus:ring-blue-500 focus:ring-offset-2">
+
+            <i class="fa fa-save" aria-hidden="true"></i>
+
+            {% if form.instance.pk %}
+                Update Student
+            {% else %}
+                Save Student
+            {% endif %}
+
+        </button>
+
+    </div>
+
+</form>
+
+
+</div>
+
+{% endblock %}
