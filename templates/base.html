@@ -90,8 +90,8 @@
                     {% endif %}">
 
                     <i class="fa fa-graduation-cap mr-2"
-                    style="font-size:20px"
-                    aria-hidden="true"></i>
+                       style="font-size:20px"
+                       aria-hidden="true"></i>
 
                     Academics
 
@@ -156,8 +156,13 @@
 
                 <!-- Reports -->
                 <a
-                    href="#"
-                    class="block px-4 py-3 rounded-lg hover:bg-blue-800 mb-2">
+                    href="{% url 'report_dashboard' %}"
+                    class="block px-4 py-3 rounded-lg mb-2
+                    {% if request.resolver_match.url_name == 'report_dashboard' %}
+                        bg-blue-800
+                    {% else %}
+                        hover:bg-blue-800
+                    {% endif %}">
 
                     <i class="fa fa-bar-chart mr-2"
                        style="font-size:20px"
@@ -262,7 +267,7 @@
 
 
                                 <a
-                                    href="#"
+                                    href="{% url 'course_list' %}"
                                     class="flex items-center gap-3
                                            px-3 py-2.5
                                            rounded-lg
@@ -331,8 +336,9 @@
                                 </a>
 
 
+                                <!-- Mobile Reports -->
                                 <a
-                                    href="#"
+                                    href="{% url 'report_dashboard' %}"
                                     class="flex items-center gap-3
                                            px-3 py-2.5
                                            rounded-lg

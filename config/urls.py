@@ -12,5 +12,7 @@ urlpatterns = [
 
     path('academics/', include('academics.urls')),
 
+     path('reports/', include('reports.urls')),
+
     path('', views.dashboard, name='dashboard'),
 ]
