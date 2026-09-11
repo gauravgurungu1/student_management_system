@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ page_title }} | Student Management System
+{% endblock %}
+
+{% block page_title %}
+{{ page_title }}
+{% endblock %}
+
+{% block content %}
+
+<div class="page-actions">
+
+    <div>
+        <h2>{{ page_title }}</h2>
+
+        <p class="muted">
+            Enter teacher information below
+        </p>
+    </div>
+
+    <a
+        href="{% url 'teacher_list' %}"
+        class="secondary-btn"
+    >
+        ← Back to Teachers
+    </a>
+
+</div>
+
+
+<div class="dashboard-card teacher-form-card">
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+
+        {% if form.non_field_errors %}
+
+            <div class="alert error-alert">
+
+                {{ form.non_field_errors }}
+
+            </div>
+
+        {% endif %}
+
+
+        <div class="form-grid">
+
+
+            <div class="form-group">
+
+                <label for="{{ form.employee_id.id_for_label }}">
+                    Employee ID
+                </label>
+
+                {{ form.employee_id }}
+
+                {% for error in form.employee_id.errors %}
+                    <small class="form-error">
+                        {{ error }}
+                    </small>
+                {% endfor %}
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="{{ form.full_name.id_for_label }}">
+                    Full Name
+                </label>
+
+                {{ form.full_name }}
+
+                {% for error in form.full_name.errors %}
+                    <small class="form-error">
+                        {{ error }}
+                    </small>
+                {% endfor %}
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="{{ form.email.id_for_label }}">
+                    Email
+                </label>
+
+                {{ form.email }}
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="{{ form.phone.id_for_label }}">
+                    Phone
+                </label>
+
+                {{ form.phone }}
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="{{ form.qualification.id_for_label }}">
+                    Qualification
+                </label>
+
+                {{ form.qualification }}
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="{{ form.hire_date.id_for_label }}">
+                    Hire Date
+                </label>
+
+                {{ form.hire_date }}
+
+            </div>
+
+
+            <div class="form-group full-width">
+
+                <label for="{{ form.address.id_for_label }}">
+                    Address
+                </label>
+
+                {{ form.address }}
+
+            </div>
+
+
+            <div class="form-group full-width">
+
+                <label>
+                    Subjects
+                </label>
+
+                {{ form.subjects }}
+
+                <small class="form-help">
+                    Select one or more subjects taught by this teacher.
+                </small>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label class="checkbox-label">
+
+                    {{ form.is_active }}
+
+                    Active Teacher
+
+                </label>
+
+            </div>
+
+        </div>
+
+
+        <div class="form-actions">
+
+            <a
+                href="{% url 'teacher_list' %}"
+                class="secondary-btn"
+            >
+                Cancel
+            </a>
+
+            <button
+                type="submit"
+                class="primary-btn"
+            >
+                {{ button_text }}
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}
