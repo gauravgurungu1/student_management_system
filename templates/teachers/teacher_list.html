@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+
+{% block title %}
+Teachers | Student Management System
+{% endblock %}
+
+{% block page_title %}
+Teachers
+{% endblock %}
+
+{% block content %}
+
+<div class="page-actions">
+
+    <div>
+        <h2>Teacher Management</h2>
+
+        <p class="muted">
+            Manage all registered teachers
+        </p>
+    </div>
+
+    <a
+        href="{% url 'teacher_add' %}"
+        class="primary-btn"
+    >
+        + Add Teacher
+    </a>
+
+</div>
+
+
+{% if messages %}
+
+    {% for message in messages %}
+
+        <div class="alert success-alert">
+            {{ message }}
+        </div>
+
+    {% endfor %}
+
+{% endif %}
+
+
+<div class="dashboard-card">
+
+    <form method="GET">
+
+        <div class="search-row">
+
+            <input
+                type="text"
+                name="search"
+                value="{{ search_query }}"
+                class="form-control"
+                placeholder="Search by employee ID, name or email..."
+            >
+
+            <button
+                type="submit"
+                class="primary-btn"
+            >
+                Search
+            </button>
+
+        </div>
+
+    </form>
+
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>Employee ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Qualification</th>
+                    <th>Subjects</th>
+                    <th>Status</th>
+                    <th>Action</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for teacher in teachers %}
+
+                <tr>
+
+                    <td>
+                        <strong>
+                            {{ teacher.employee_id }}
+                        </strong>
+                    </td>
+
+                    <td>
+                        {{ teacher.full_name }}
+                    </td>
+
+                    <td>
+                        {{ teacher.email|default:"-" }}
+                    </td>
+
+                    <td>
+                        {{ teacher.phone|default:"-" }}
+                    </td>
+
+                    <td>
+                        {{ teacher.qualification|default:"-" }}
+                    </td>
+
+                    <td>
+
+                        {% for subject in teacher.subjects.all %}
+
+                            <span class="subject-tag">
+                                {{ subject.name }}
+                            </span>
+
+                        {% empty %}
+
+                            <span class="muted">
+                                No subjects
+                            </span>
+
+                        {% endfor %}
+
+                    </td>
+
+                    <td>
+
+                        {% if teacher.is_active %}
+
+                            <span class="badge badge-success">
+                                Active
+                            </span>
+
+                        {% else %}
+
+                            <span class="badge badge-danger">
+                                Inactive
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+
+                        <div class="action-links">
+
+                            <a
+                                href="{% url 'teacher_edit' teacher.pk %}"
+                                class="edit-link"
+                            >
+                                Edit
+                            </a>
+
+                            <a
+                                href="{% url 'teacher_delete' teacher.pk %}"
+                                class="delete-link"
+                            >
+                                Delete
+                            </a>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+
+                    <td
+                        colspan="8"
+                        class="empty-state"
+                    >
+                        No teachers found.
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}
+Delete Teacher | Student Management System
+{% endblock %}
+
+{% block page_title %}
+Delete Teacher
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-card delete-card">
+
+    <div class="delete-warning">
+
+        <h2>Delete Teacher?</h2>
+
+        <p>
+            Are you sure you want to delete
+            <strong>{{ teacher.full_name }}</strong>?
+        </p>
+
+        <p class="muted">
+            Employee ID: {{ teacher.employee_id }}
+        </p>
+
+    </div>
+
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        <div class="form-actions">
+
+            <a
+                href="{% url 'teacher_list' %}"
+                class="secondary-btn"
+            >
+                Cancel
+            </a>
+
+            <button
+                type="submit"
+                class="danger-btn"
+            >
+                Yes, Delete
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}
