@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block page_title %}Mark Attendance{% endblock %}
+{% block content %}
+<div class="mb-6"><h2 class="text-2xl font-bold text-slate-800">Mark Attendance</h2><p class="text-slate-500 mt-1">Select a course first, then choose one of its subjects and load the enrolled students.</p></div>
+<div class="bg-white rounded-xl border shadow-sm max-w-4xl p-6">
+  <form method="get" class="grid grid-cols-1 md:grid-cols-4 gap-5 items-end mb-8 pb-6 border-b"><div><label class="block text-sm font-medium text-slate-700 mb-2">Course</label><select name="course" id="id_course" class="w-full px-4 py-3 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500" required><option value="">Select a course</option>{% for course in session_form.fields.course.queryset %}<option value="{{ course.id }}" {% if selected_course == course.id|stringformat:'s' %}selected{% endif %}>{{ course.name }}</option>{% endfor %}</select></div><div><label class="block text-sm font-medium text-slate-700 mb-2">Subject</label><select name="subject" id="id_subject" class="w-full px-4 py-3 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500" required><option value="">Select a subject</option>{% for subject in all_subjects %}<option value="{{ subject.id }}" data-course="{{ subject.course_id }}" {% if selected_subject and selected_subject.id == subject.id %}selected{% endif %}>Semester {{ subject.semester }} - {{ subject.code }} - {{ subject.name }}</option>{% endfor %}</select></div><div><label class="block text-sm font-medium text-slate-700 mb-2">Attendance Date</label><div class="w-full px-4 py-3 bg-slate-100 border border-slate-200 rounded-lg text-slate-700">{{ today|date:'F d, Y' }} <span class="text-xs text-slate-500">(Today)</span></div></div><button class="px-5 py-3 bg-slate-800 text-white rounded-lg">Load Students</button></form>
+  {% if session_form.non_field_errors %}<div class="mb-5 p-4 bg-red-50 text-red-700 rounded-lg">{{ session_form.non_field_errors }}</div>{% endif %}
+  {% if selected_subject %}
+  <div class="mb-5 p-4 bg-blue-50 text-blue-900 rounded-lg"><strong>{{ selected_subject.course.name }}</strong> · Semester {{ selected_subject.semester }} · {{ selected_subject.code }} - {{ selected_subject.name }}</div>
+  <form method="post" id="attendance-save-form" onsubmit="return confirmAttendanceSave();">{% csrf_token %}<input type="hidden" name="course" value="{{ selected_subject.course_id }}"><input type="hidden" name="subject" value="{{ selected_subject.id }}">
+    {% if record_form.students %}<div class="overflow-x-auto"><table class="w-full text-left"><thead class="bg-slate-50"><tr><th class="px-4 py-3">Student</th><th class="px-4 py-3">Status</th></tr></thead><tbody class="divide-y">{% for field in record_form %}<tr><td class="px-4 py-3 font-medium">{{ field.label }}</td><td class="px-4 py-3">{{ field }}</td></tr>{% endfor %}</tbody></table></div><div class="flex justify-end mt-6"><button class="px-5 py-3 bg-blue-900 text-white rounded-lg hover:bg-blue-800">Save Attendance</button></div>{% else %}<p class="text-slate-500">No students are assigned to this course.</p>{% endif %}
+  </form>
+  {% endif %}
+</div>
+<script>
+const courseSelect = document.getElementById('id_course');
+const subjectSelect = document.getElementById('id_subject');
+const initialSubject = '{{ selected_subject.id|default:"" }}';
+function filterSubjects() {
+  const courseId = courseSelect.value;
+  let hasVisibleSubject = false;
+  Array.from(subjectSelect.options).forEach((option, index) => {
+    if (index === 0) return;
+    const visible = option.dataset.course === courseId;
+    option.hidden = !visible;
+    if (visible) hasVisibleSubject = true;
+    if (!visible && option.selected) option.selected = false;
+  });
+  if (!courseId || !hasVisibleSubject) subjectSelect.value = '';
+}
+courseSelect.addEventListener('change', filterSubjects);
+filterSubjects();
+if (initialSubject) subjectSelect.value = initialSubject;
+</script>
+<script>
+function confirmAttendanceSave() {
+  const statuses = document.querySelectorAll('#attendance-save-form input[type="radio"]:checked');
+  const present = Array.from(statuses).filter((input) => input.value === 'present').length;
+  const absent = Array.from(statuses).filter((input) => input.value === 'absent').length;
+  const subject = '{{ selected_subject.code|escapejs }} - {{ selected_subject.name|escapejs }}';
+  const course = '{{ selected_subject.course.name|escapejs }}';
+  const date = '{{ today|date:"F d, Y"|escapejs }}';
+  return window.confirm(
+    'Confirm Attendance\n\n' +
+    'Course: ' + course + '\n' +
+    'Subject: ' + subject + '\n' +
+    'Date: ' + date + '\n\n' +
+    'Present: ' + present + '\n' +
+    'Absent: ' + absent + '\n\n' +
+    'Save this attendance?'
+  );
+}
+</script>
+{% endblock %}
