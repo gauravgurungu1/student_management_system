@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% block page_title %}Student Attendance History{% endblock %}
+{% block content %}
+<div class="mb-6"><h2 class="text-2xl font-bold text-slate-800">{{ student.name }}</h2><p class="text-slate-500 mt-1">{{ student.course.name }} · {{ student.email }}</p></div>
+<div class="bg-white rounded-xl border shadow-sm p-6 mb-6"><p class="text-sm text-slate-500">Overall Attendance</p><p class="text-4xl font-bold text-blue-900 mt-2">{% if percentage is not None %}{{ percentage|floatformat:1 }}%{% else %}No attendance data{% endif %}</p><p class="text-sm text-slate-500 mt-2">Calculated from all recorded sessions.</p></div>
+<div class="bg-white rounded-xl border shadow-sm overflow-hidden"><table class="w-full text-left"><thead class="bg-slate-50"><tr><th class="px-6 py-4">Date</th><th class="px-6 py-4">Subject</th><th class="px-6 py-4">Status</th></tr></thead><tbody class="divide-y">{% for record in records %}<tr><td class="px-6 py-4">{{ record.session.date|date:'M d, Y' }}</td><td class="px-6 py-4">{{ record.session.subject.code }} - {{ record.session.subject.name }}</td><td class="px-6 py-4">{% if record.status == 'present' %}<span class="px-3 py-1 rounded-full bg-green-100 text-green-700">Present</span>{% else %}<span class="px-3 py-1 rounded-full bg-red-100 text-red-700">Absent</span>{% endif %}</td></tr>{% empty %}<tr><td colspan="3" class="p-10 text-center text-slate-500">No attendance data.</td></tr>{% endfor %}</tbody></table></div>
+{% endblock %}

@@ -14,5 +14,8 @@ urlpatterns = [
 
      path('reports/', include('reports.urls')),
 
+     path('attendance/', include('attendance.urls')),
+
+
     path('', views.dashboard, name='dashboard'),
 ]
