@@ -1,79 +1,82 @@
-from django.db.models import Q
-from django.shortcuts import render, redirect, get_object_or_404
-from academics.models import Course
-from .models import Student
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, redirect, render
+
 from .forms import StudentForm
+from .models import Student
 
 
-# READ - Show all students (with optional search + course filter)
+@login_required
 def student_list(request):
-    students = Student.objects.select_related('course').all()
+    students = Student.objects.select_related(
+        'user',
+        'academic_year',
+        'class_name',
+        'section',
+    ).order_by('student_id')
 
-    search_query = request.GET.get('search', '').strip()
-    course_id = request.GET.get('course', '').strip()
+    search = request.GET.get('search', '').strip()
 
-    if search_query:
+    if search:
         students = students.filter(
-            Q(name__icontains=search_query) | Q(email__icontains=search_query)
+            student_id__icontains=search
+        ) | students.filter(
+            user__first_name__icontains=search
+        ) | students.filter(
+            user__last_name__icontains=search
         )
 
-    if course_id.isdigit():
-        students = students.filter(course_id=course_id)
-    elif course_id:
-        # Non-numeric/garbage course value in the query string: ignore it
-        # rather than letting the ORM raise, and drop it from the sticky UI.
-        course_id = ''
-
-    students = students.order_by('name')
-
-    context = {
+    return render(request, 'students/student_list.html', {
         'students': students,
-        'courses': Course.objects.order_by('name'),
-        'search_query': search_query,
-        'selected_course': course_id,
-        'filters_applied': bool(search_query or course_id),
-    }
-    return render(request, 'students/student_list.html', context)
+        'search': search,
+    })
 
 
-# CREATE - Add a new student
+@login_required
 def student_create(request):
-    if request.method == 'POST':
-        form = StudentForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('student_list')
-    else:
-        form = StudentForm()
+    form = StudentForm(request.POST or None)
 
-    return render(request, 'students/student_form.html', {'form': form})
-
-
-# UPDATE - Edit an existing student
-def student_update(request, id):
-    student = get_object_or_404(Student, id=id)
-
-    if request.method == 'POST':
-        form = StudentForm(request.POST, instance=student)
-        if form.is_valid():
-            form.save()
-            return redirect('student_list')
-    else:
-        form = StudentForm(instance=student)
-
-    return render(request, 'students/student_form.html', {'form': form})
-
-
-# DELETE - Delete a student
-def student_delete(request, id):
-    student = get_object_or_404(Student, id=id)
-
-    if request.method == 'POST':
-        student.delete()
+    if form.is_valid():
+        form.save()
+        messages.success(request, 'Student added successfully.')
         return redirect('student_list')
 
-    return render(
-        request,
-        'students/student_confirm_delete.html',
-        {'student': student}
+    return render(request, 'students/student_form.html', {
+        'form': form,
+        'title': 'Add Student',
+    })
+
+
+@login_required
+def student_update(request, pk):
+    student = get_object_or_404(Student, pk=pk)
+
+    form = StudentForm(
+        request.POST or None,
+        instance=student
     )
+
+    if form.is_valid():
+        form.save()
+        messages.success(request, 'Student updated successfully.')
+        return redirect('student_list')
+
+    return render(request, 'students/student_form.html', {
+        'form': form,
+        'title': 'Edit Student',
+    })
+
+
+@login_required
+def student_delete(request, pk):
+    student = get_object_or_404(Student, pk=pk)
+
+    if request.method == 'POST':
+        if student.user:
+            student.user.delete()
+        else:
+            student.delete()
+
+        messages.success(request, 'Student deleted successfully.')
+
+    return redirect('student_list')

@@ -1,0 +1,330 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container-fluid py-4">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="fas fa-calendar-check me-2"></i>
+                Attendance
+            </h2>
+            <p class="text-muted mb-0">
+                Mark and manage daily student attendance.
+            </p>
+        </div>
+
+        <a href="{% url 'attendance_history' %}"
+           class="btn btn-outline-primary">
+            <i class="fas fa-history me-2"></i>
+            Attendance History
+        </a>
+    </div>
+
+
+    <!-- Filter -->
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0 fw-bold">
+                <i class="fas fa-filter me-2"></i>
+                Select Class & Section
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+            <form method="get">
+
+                <div class="row g-3 align-items-end">
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">
+                            Date
+                        </label>
+
+                        <input
+                            type="date"
+                            name="date"
+                            value="{{ selected_date }}"
+                            class="form-control"
+                            required
+                        >
+                    </div>
+
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">
+                            Class
+                        </label>
+
+                        <select
+                            name="class"
+                            class="form-select"
+                            required
+                        >
+                            <option value="">
+                                Select Class
+                            </option>
+
+                            {% for class in classes %}
+
+                            <option
+                                value="{{ class.id }}"
+                                {% if selected_class|stringformat:"s" == class.id|stringformat:"s" %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ class.name }}
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+                    </div>
+
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">
+                            Section
+                        </label>
+
+                        <select
+                            name="section"
+                            class="form-select"
+                            required
+                        >
+                            <option value="">
+                                Select Section
+                            </option>
+
+                            {% for section in sections %}
+
+                            <option
+                                value="{{ section.id }}"
+                                {% if selected_section|stringformat:"s" == section.id|stringformat:"s" %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ section.class_name.name }} - {{ section.name }}
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+                    </div>
+
+
+                    <div class="col-12">
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary"
+                        >
+                            <i class="fas fa-search me-2"></i>
+                            Load Students
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    {% if students %}
+
+    <!-- Attendance Form -->
+    <form method="post" action="{% url 'save_attendance' %}">
+
+        {% csrf_token %}
+
+        <input type="hidden"
+               name="date"
+               value="{{ selected_date }}">
+
+        <input type="hidden"
+               name="class_id"
+               value="{{ selected_class }}">
+
+        <input type="hidden"
+               name="section_id"
+               value="{{ selected_section }}">
+
+
+        <div class="card shadow-sm border-0">
+
+            <div class="card-header bg-white py-3">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <h5 class="mb-0 fw-bold">
+                        <i class="fas fa-users me-2"></i>
+                        Student Attendance
+                    </h5>
+
+                    <span class="badge bg-primary">
+                        {{ students|length }} Students
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="card-body p-0">
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle mb-0">
+
+                        <thead class="table-light">
+
+                            <tr>
+                                <th>#</th>
+                                <th>Student ID</th>
+                                <th>Student Name</th>
+                                <th>Status</th>
+                                <th>Remarks</th>
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            {% for student in students %}
+
+                            <tr>
+
+                                <td>
+                                    {{ forloop.counter }}
+                                </td>
+
+
+                                <td>
+                                    <span class="badge bg-primary">
+                                        {{ student.student_id }}
+                                    </span>
+                                </td>
+
+
+                                <td class="fw-semibold">
+                                    {{ student.user.get_full_name }}
+                                </td>
+
+
+                                <td style="min-width: 180px;">
+
+                                    <select
+                                        name="status_{{ student.id }}"
+                                        class="form-select"
+                                    >
+
+                                        <option
+                                            value="present"
+                                            {% if student.attendance_record.status == 'present' or not student.attendance_record %}
+                                                selected
+                                            {% endif %}
+                                        >
+                                            Present
+                                        </option>
+
+                                        <option
+                                            value="absent"
+                                            {% if student.attendance_record.status == 'absent' %}
+                                                selected
+                                            {% endif %}
+                                        >
+                                            Absent
+                                        </option>
+
+                                        <option
+                                            value="late"
+                                            {% if student.attendance_record.status == 'late' %}
+                                                selected
+                                            {% endif %}
+                                        >
+                                            Late
+                                        </option>
+
+                                    </select>
+
+                                </td>
+
+
+                                <td style="min-width: 220px;">
+
+                                    <input
+                                        type="text"
+                                        name="remarks_{{ student.id }}"
+                                        value="{% if student.attendance_record %}{{ student.attendance_record.remarks }}{% endif %}"
+                                        class="form-control"
+                                        placeholder="Optional remarks"
+                                    >
+
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+
+            <div class="card-footer bg-white py-3">
+
+                <button
+                    type="submit"
+                    class="btn btn-success"
+                >
+                    <i class="fas fa-save me-2"></i>
+                    Save Attendance
+                </button>
+
+            </div>
+
+        </div>
+
+    </form>
+
+
+    {% else %}
+
+    <!-- Empty State -->
+
+    <div class="card shadow-sm border-0">
+
+        <div class="card-body text-center py-5">
+
+            <i class="fas fa-clipboard-check fa-4x text-muted mb-3"></i>
+
+            <h4 class="fw-bold">
+                No Students Loaded
+            </h4>
+
+            <p class="text-muted mb-0">
+                Select a date, class and section to load students.
+            </p>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

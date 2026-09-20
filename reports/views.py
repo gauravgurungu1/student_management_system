@@ -1,63 +1,103 @@
-from django.db.models import Count, Q
+from django.contrib.auth.decorators import login_required
+from django.db import models
+from django.db.models import Count
 from django.shortcuts import render
 
-from academics.models import Course, Subject
+from academics.models import AcademicYear, Class, Section, Subject
 from students.models import Student
 
 
+@login_required
 def report_dashboard(request):
-    """
-    Reports dashboard with summary statistics,
-    course-wise student counts, and student filters.
-    """
-
-    # Get filter values from the request
     search_query = request.GET.get("search", "").strip()
-    course_id = request.GET.get("course", "").strip()
+    class_id = request.GET.get("class", "").strip()
 
-    # Base student queryset
-    students = Student.objects.select_related("course").all()
+    students = Student.objects.select_related(
+        "user",
+        "academic_year",
+        "class_name",
+        "section",
+    ).all()
 
-    # Search by student name or email
     if search_query:
         students = students.filter(
-            Q(name__icontains=search_query)
-            | Q(email__icontains=search_query)
+            models.Q(student_id__icontains=search_query)
+            | models.Q(user__first_name__icontains=search_query)
+            | models.Q(user__last_name__icontains=search_query)
+            | models.Q(user__email__icontains=search_query)
         )
 
-    # Filter by course
-    if course_id.isdigit():
-        students = students.filter(course_id=course_id)
-    elif course_id:
-        course_id = ""
+    if class_id.isdigit():
+        students = students.filter(class_name_id=class_id)
+    elif class_id:
+        class_id = ""
 
-    # Keep results predictable
-    students = students.order_by("name")
+    students = students.order_by("student_id")
 
-    # Summary data
-    total_students = Student.objects.count()
-    total_courses = Course.objects.count()
-    total_subjects = Subject.objects.count()
+    student_count = Student.objects.count()
+    active_student_count = Student.objects.filter(is_active=True).count()
 
-    # Course-wise student summary
-    course_summary = (
-        Course.objects
-        .annotate(student_count=Count("students"))
-        .order_by("name")
-    )
+    academic_year_count = AcademicYear.objects.count()
+    class_count = Class.objects.count()
+    section_count = Section.objects.count()
+    subject_count = Subject.objects.count()
+
+    attendance_count = 0
+
+    try:
+        from attendance.models import Attendance
+        attendance_count = Attendance.objects.count()
+    except (ImportError, AttributeError):
+        attendance_count = 0
+
+    fee_count = 0
+    paid_fees = 0
+    partial_fees = 0
+    unpaid_fees = 0
+
+    try:
+        from fees.models import Fee
+
+        fee_count = Fee.objects.count()
+
+        field_names = [field.name for field in Fee._meta.get_fields()]
+
+        if "status" in field_names:
+            paid_fees = Fee.objects.filter(status="paid").count()
+            partial_fees = Fee.objects.filter(status="partial").count()
+            unpaid_fees = Fee.objects.filter(status="unpaid").count()
+
+    except (ImportError, AttributeError):
+        pass
 
     context = {
         "students": students,
-        "courses": Course.objects.order_by("name"),
-        "course_summary": course_summary,
+        "classes": Class.objects.all(),
 
-        "total_students": total_students,
-        "total_courses": total_courses,
-        "total_subjects": total_subjects,
+        "class_summary": Class.objects.annotate(
+            student_count=Count("students")
+        ).order_by("name"),
+
+        "student_count": student_count,
+        "active_student_count": active_student_count,
+        "academic_year_count": academic_year_count,
+        "class_count": class_count,
+        "section_count": section_count,
+        "subject_count": subject_count,
+        "attendance_count": attendance_count,
+
+        "fee_count": fee_count,
+        "paid_fees": paid_fees,
+        "partial_fees": partial_fees,
+        "unpaid_fees": unpaid_fees,
 
         "search_query": search_query,
-        "selected_course": course_id,
-        "filters_applied": bool(search_query or course_id),
+        "selected_class": class_id,
+        "filters_applied": bool(search_query or class_id),
     }
 
-    return render(request, "reports/report_dashboard.html", context)
+    return render(
+        request,
+        "reports/report_dashboard.html",
+        context
+    )

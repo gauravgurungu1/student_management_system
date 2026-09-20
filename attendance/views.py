@@ -1,125 +1,179 @@
-from django.db.models import Case, Count, ExpressionWrapper, F, FloatField, Q, When
-from django.shortcuts import get_object_or_404, redirect, render
-from django.utils import timezone
+from datetime import date
 
-from academics.models import Course, Subject
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.db import transaction
+from django.shortcuts import redirect, render
+
+from academics.models import Class, Section
 from students.models import Student
-from .forms import AttendanceRecordForm, AttendanceSessionForm
-from .models import AttendanceRecord, AttendanceSession
+
+from .models import Attendance
 
 
-def attendance_list(request):
-    sessions = AttendanceSession.objects.select_related("subject__course").annotate(
-        present_count=Count("records", filter=Q(records__status=AttendanceRecord.PRESENT)),
-        total_count=Count("records"),
+@login_required
+def attendance_dashboard(request):
+
+    selected_date = request.GET.get(
+        'date',
+        date.today().isoformat()
     )
-    course_id = request.GET.get("course", "").strip()
-    subject_id = request.GET.get("subject", "").strip()
-    if course_id.isdigit():
-        sessions = sessions.filter(subject__course_id=course_id)
-    if subject_id.isdigit():
-        sessions = sessions.filter(subject_id=subject_id)
-    students = Student.objects.select_related("course").annotate(
-        attendance_total=Count("attendance_records"),
-        attendance_present=Count(
-            "attendance_records",
-            filter=Q(attendance_records__status=AttendanceRecord.PRESENT),
-        ),
-    ).annotate(
-        attendance_percentage=Case(
-            When(
-                attendance_total__gt=0,
-                then=ExpressionWrapper(
-                    F("attendance_present") * 100.0 / F("attendance_total"),
-                    output_field=FloatField(),
-                ),
-            ),
-            default=None,
-            output_field=FloatField(null=True),
-        ),
-    ).order_by("name")
-    if course_id.isdigit():
-        students = students.filter(course_id=course_id)
-    return render(request, "attendance/attendance_list.html", {
-        "sessions": sessions,
-        "students": students,
-        "courses": Course.objects.order_by("name"),
-        "subjects": Subject.objects.select_related("course").order_by("course__name", "semester", "code"),
-        "selected_course": course_id,
-        "selected_subject": subject_id,
-    })
 
+    selected_class = request.GET.get('class')
+    selected_section = request.GET.get('section')
 
-def attendance_create(request):
-    subject_id = request.POST.get("subject") or request.GET.get("subject")
-    course_id = request.POST.get("course") or request.GET.get("course")
-    initial = {}
-    if subject_id:
-        initial["subject"] = subject_id
-    if course_id:
-        initial["course"] = course_id
-    session_form = AttendanceSessionForm(
-        request.POST or None,
-        course_id=course_id,
-        initial=initial,
+    classes = Class.objects.all()
+    sections = Section.objects.all()
+
+    students = []
+
+    if selected_class and selected_section:
+
+        student_queryset = Student.objects.filter(
+            is_active=True,
+            class_name_id=selected_class,
+            section_id=selected_section
+        ).select_related(
+            'user',
+            'class_name',
+            'section'
+        ).order_by('student_id')
+
+        for student in student_queryset:
+
+            attendance = Attendance.objects.filter(
+                student=student,
+                date=selected_date
+            ).first()
+
+            student.attendance_record = attendance
+
+            students.append(student)
+
+    context = {
+        'classes': classes,
+        'sections': sections,
+        'students': students,
+        'selected_date': selected_date,
+        'selected_class': selected_class,
+        'selected_section': selected_section,
+    }
+
+    return render(
+        request,
+        'attendance/dashboard.html',
+        context
     )
-    subject = None
-    if subject_id and str(subject_id).isdigit():
-        subject = Subject.objects.select_related("course").filter(pk=subject_id).first()
-
-    if request.method == "POST" and session_form.is_valid():
-        subject = session_form.cleaned_data["subject"]
-        record_form = AttendanceRecordForm(request.POST, subject=subject)
-        if record_form.is_valid():
-            session = session_form.save(commit=False)
-            session.date = timezone.localdate()
-            session.save()
-            AttendanceRecord.objects.bulk_create([
-                AttendanceRecord(
-                    session=session,
-                    student_id=student.pk,
-                    status=record_form.cleaned_data[f"student_{student.pk}"],
-                )
-                for student in record_form.students
-            ])
-            return redirect("attendance_list")
-    else:
-        record_form = AttendanceRecordForm(subject=subject)
-    return render(request, "attendance/attendance_form.html", {
-        "session_form": session_form,
-        "record_form": record_form,
-        "selected_subject": subject,
-        "selected_course": course_id,
-        "today": timezone.localdate,
-        "all_subjects": Subject.objects.select_related("course").order_by(
-            "course__name", "semester", "code"
-        ),
-    })
 
 
-def attendance_detail(request, id):
-    session = get_object_or_404(
-        AttendanceSession.objects.select_related("subject__course"), id=id
+@login_required
+@transaction.atomic
+def save_attendance(request):
+
+    if request.method != 'POST':
+        return redirect('attendance_dashboard')
+
+    attendance_date = request.POST.get('date')
+    class_id = request.POST.get('class_id')
+    section_id = request.POST.get('section_id')
+
+    if not attendance_date or not class_id or not section_id:
+
+        messages.error(
+            request,
+            'Date, class and section are required.'
+        )
+
+        return redirect('attendance_dashboard')
+
+    students = Student.objects.filter(
+        is_active=True,
+        class_name_id=class_id,
+        section_id=section_id
     )
-    records = session.records.select_related("student").all()
-    return render(request, "attendance/attendance_detail.html", {
-        "session": session,
-        "records": records,
-        "present_count": records.filter(status=AttendanceRecord.PRESENT).count(),
-        "absent_count": records.filter(status=AttendanceRecord.ABSENT).count(),
-    })
 
+    for student in students:
 
-def student_attendance_history(request, id):
-    student = get_object_or_404(Student.objects.select_related("course"), id=id)
-    records = AttendanceRecord.objects.filter(student=student).select_related(
-        "session__subject"
+        status = request.POST.get(
+            f'status_{student.id}'
+        )
+
+        remarks = request.POST.get(
+            f'remarks_{student.id}',
+            ''
+        ).strip()
+
+        if status:
+
+            Attendance.objects.update_or_create(
+                student=student,
+                date=attendance_date,
+                defaults={
+                    'status': status,
+                    'remarks': remarks,
+                    'marked_by': request.user,
+                }
+            )
+
+    messages.success(
+        request,
+        'Attendance saved successfully.'
     )
-    total = records.count()
-    present = records.filter(status=AttendanceRecord.PRESENT).count()
-    percentage = (present / total * 100) if total else None
-    return render(request, "attendance/student_history.html", {
-        "student": student,
-        "records": records,
-        "percentage": percentage,
-    })
+
+    return redirect(
+        f'/attendance/?date={attendance_date}'
+        f'&class={class_id}'
+        f'&section={section_id}'
+    )
+
+
+@login_required
+def attendance_history(request):
+
+    records = Attendance.objects.select_related(
+        'student',
+        'student__user',
+        'student__class_name',
+        'student__section'
+    ).all()
+
+    selected_date = request.GET.get('date')
+    selected_class = request.GET.get('class')
+    selected_section = request.GET.get('section')
+    selected_status = request.GET.get('status')
+
+    if selected_date:
+        records = records.filter(
+            date=selected_date
+        )
+
+    if selected_class:
+        records = records.filter(
+            student__class_name_id=selected_class
+        )
+
+    if selected_section:
+        records = records.filter(
+            student__section_id=selected_section
+        )
+
+    if selected_status:
+        records = records.filter(
+            status=selected_status
+        )
+
+    context = {
+        'records': records,
+        'classes': Class.objects.all(),
+        'sections': Section.objects.all(),
+        'selected_date': selected_date,
+        'selected_class': selected_class,
+        'selected_section': selected_section,
+        'selected_status': selected_status,
+    }
+
+    return render(
+        request,
+        'attendance/history.html',
+        context
+    )

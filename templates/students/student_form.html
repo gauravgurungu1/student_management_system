@@ -1,340 +1,217 @@
 {% extends 'base.html' %}
 
-{% block page_title %}
-    {% if form.instance.pk %}
-        Edit Student
-    {% else %}
-        Add Student
-    {% endif %}
-{% endblock %}
-
 {% block content %}
 
-<!-- Page Header -->
-<div class="mb-7 text-center">
+<div class="container py-4">
 
-    <h2 class="text-2xl sm:text-3xl font-bold text-slate-800">
-        {% if form.instance.pk %}
-            Edit Student
-        {% else %}
-            Add Student
-        {% endif %}
-    </h2>
+    <div class="row justify-content-center">
 
-    <p class="text-slate-500 mt-2 text-sm sm:text-base">
-        {% if form.instance.pk %}
-            Update the student's information below.
-        {% else %}
-            Add a new student to the system.
-        {% endif %}
-    </p>
+        <div class="col-xl-9">
 
-</div>
+            <div class="card shadow-sm border-0">
 
-
-<!-- Form Wrapper -->
-<div class="w-full max-w-3xl mx-auto">
-
-    <!-- Student Form Card -->
-    <div class="bg-white rounded-2xl border border-slate-200
-                shadow-sm overflow-hidden">
-
-        <!-- Card Header -->
-        <div class="px-6 sm:px-8 py-5 border-b border-slate-200">
-
-            <div class="flex items-center gap-3">
-
-                <div class="w-10 h-10 rounded-lg
-                            bg-blue-50 text-blue-700
-                            flex items-center justify-center">
-
-                    <i class="fa fa-user" aria-hidden="true"></i>
-
+                <div class="card-header bg-white py-3">
+                    <h4 class="mb-0 fw-bold">
+                        <i class="fas fa-user-graduate me-2"></i>
+                        {{ title }}
+                    </h4>
                 </div>
 
-                <div>
 
-                    <h3 class="text-lg font-semibold text-slate-800">
-                        Student Information
-                    </h3>
+                <div class="card-body p-4">
 
-                    <p class="text-sm text-slate-500 mt-0.5">
-                        Enter the student's details below.
-                    </p>
+                    <form method="post">
+
+                        {% csrf_token %}
+
+
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+
+
+                        <h5 class="fw-bold mb-3">
+                            Personal Information
+                        </h5>
+
+                        <div class="row">
+
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label fw-semibold">
+                                    First Name
+                                </label>
+                                {{ form.first_name }}
+                                {{ form.first_name.errors }}
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label fw-semibold">
+                                    Last Name
+                                </label>
+                                {{ form.last_name }}
+                                {{ form.last_name.errors }}
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label fw-semibold">
+                                    Email
+                                </label>
+                                {{ form.email }}
+                                {{ form.email.errors }}
+                            </div>
+
+                        </div>
+
+
+                        <div class="row">
+
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label fw-semibold">
+                                    Student ID
+                                </label>
+                                {{ form.student_id }}
+                                {{ form.student_id.errors }}
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label fw-semibold">
+                                    Date of Birth
+                                </label>
+                                {{ form.date_of_birth }}
+                                {{ form.date_of_birth.errors }}
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label fw-semibold">
+                                    Gender
+                                </label>
+                                {{ form.gender }}
+                                {{ form.gender.errors }}
+                            </div>
+
+                        </div>
+
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold">
+                                    Phone
+                                </label>
+                                {{ form.phone }}
+                                {{ form.phone.errors }}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold">
+                                    Guardian
+                                </label>
+                                {{ form.guardian }}
+                                {{ form.guardian.errors }}
+                            </div>
+
+                        </div>
+
+
+                        <div class="mb-4">
+
+                            <label class="form-label fw-semibold">
+                                Address
+                            </label>
+
+                            {{ form.address }}
+                            {{ form.address.errors }}
+
+                        </div>
+
+
+                        <hr class="my-4">
+
+
+                        <h5 class="fw-bold mb-3">
+                            Academic Information
+                        </h5>
+
+
+                        <div class="row">
+
+                            <div class="col-md-4 mb-3">
+
+                                <label class="form-label fw-semibold">
+                                    Academic Year
+                                </label>
+
+                                {{ form.academic_year }}
+                                {{ form.academic_year.errors }}
+
+                            </div>
+
+
+                            <div class="col-md-4 mb-3">
+
+                                <label class="form-label fw-semibold">
+                                    Class
+                                </label>
+
+                                {{ form.class_name }}
+                                {{ form.class_name.errors }}
+
+                            </div>
+
+
+                            <div class="col-md-4 mb-3">
+
+                                <label class="form-label fw-semibold">
+                                    Section
+                                </label>
+
+                                {{ form.section }}
+                                {{ form.section.errors }}
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="form-check mb-4">
+
+                            {{ form.is_active }}
+
+                            <label class="form-check-label fw-semibold">
+                                Active Student
+                            </label>
+
+                        </div>
+
+
+                        <div class="d-flex gap-2">
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary px-4"
+                            >
+                                <i class="fas fa-save me-2"></i>
+                                Save Student
+                            </button>
+
+                            <a
+                                href="{% url 'student_list' %}"
+                                class="btn btn-secondary px-4"
+                            >
+                                Cancel
+                            </a>
+
+                        </div>
+
+                    </form>
 
                 </div>
 
             </div>
 
         </div>
-
-
-        <!-- Form -->
-        <form method="post" class="px-6 sm:px-8 py-6">
-
-            {% csrf_token %}
-
-
-            <!-- General Form Errors -->
-            {% if form.non_field_errors %}
-
-            <div class="mb-6 rounded-lg border border-red-200
-                        bg-red-50 p-4">
-
-                <div class="flex items-start gap-3">
-
-                    <i class="fa fa-exclamation-circle
-                              text-red-600 mt-0.5"
-                       aria-hidden="true"></i>
-
-                    <div>
-
-                        <p class="text-sm font-medium text-red-800">
-                            Please correct the following errors:
-                        </p>
-
-                        <ul class="mt-1 text-sm text-red-700
-                                   list-disc list-inside">
-
-                            {% for error in form.non_field_errors %}
-                                <li>{{ error }}</li>
-                            {% endfor %}
-
-                        </ul>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            {% endif %}
-
-
-            <!-- Fields -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-
-
-                <!-- Name -->
-                <div>
-
-                    <label
-                        for="{{ form.name.id_for_label }}"
-                        class="block text-sm font-medium
-                               text-slate-700 mb-2">
-
-                        Name
-                        <span class="text-red-500">*</span>
-
-                    </label>
-
-                    {{ form.name }}
-
-                    {% if form.name.errors %}
-
-                    <div class="mt-2 text-sm text-red-600">
-
-                        {% for error in form.name.errors %}
-
-                        <p class="flex items-start gap-1.5">
-
-                            <i class="fa fa-exclamation-circle mt-0.5"
-                               aria-hidden="true"></i>
-
-                            <span>{{ error }}</span>
-
-                        </p>
-
-                        {% endfor %}
-
-                    </div>
-
-                    {% endif %}
-
-                </div>
-
-
-                <!-- Email -->
-                <div>
-
-                    <label
-                        for="{{ form.email.id_for_label }}"
-                        class="block text-sm font-medium
-                               text-slate-700 mb-2">
-
-                        Email
-                        <span class="text-red-500">*</span>
-
-                    </label>
-
-                    {{ form.email }}
-
-                    {% if form.email.errors %}
-
-                    <div class="mt-2 text-sm text-red-600">
-
-                        {% for error in form.email.errors %}
-
-                        <p class="flex items-start gap-1.5">
-
-                            <i class="fa fa-exclamation-circle mt-0.5"
-                               aria-hidden="true"></i>
-
-                            <span>{{ error }}</span>
-
-                        </p>
-
-                        {% endfor %}
-
-                    </div>
-
-                    {% endif %}
-
-                </div>
-
-
-                <!-- Phone -->
-                <div>
-
-                    <label
-                        for="{{ form.phone.id_for_label }}"
-                        class="block text-sm font-medium
-                               text-slate-700 mb-2">
-
-                        Phone
-                        <span class="text-red-500">*</span>
-
-                    </label>
-
-                    {{ form.phone }}
-
-                    {% if form.phone.errors %}
-
-                    <div class="mt-2 text-sm text-red-600">
-
-                        {% for error in form.phone.errors %}
-
-                        <p class="flex items-start gap-1.5">
-
-                            <i class="fa fa-exclamation-circle mt-0.5"
-                               aria-hidden="true"></i>
-
-                            <span>{{ error }}</span>
-
-                        </p>
-
-                        {% endfor %}
-
-                    </div>
-
-                    {% endif %}
-
-                </div>
-
-
-                <!-- Course -->
-                <div>
-
-                    <label
-                        for="{{ form.course.id_for_label }}"
-                        class="block text-sm font-medium
-                               text-slate-700 mb-2">
-
-                        Course
-                        <span class="text-red-500">*</span>
-
-                    </label>
-
-                    {{ form.course }}
-
-                    {% if form.course.errors %}
-
-                    <div class="mt-2 text-sm text-red-600">
-
-                        {% for error in form.course.errors %}
-
-                        <p class="flex items-start gap-1.5">
-
-                            <i class="fa fa-exclamation-circle mt-0.5"
-                               aria-hidden="true"></i>
-
-                            <span>{{ error }}</span>
-
-                        </p>
-
-                        {% endfor %}
-
-                    </div>
-
-                    {% endif %}
-
-                </div>
-
-            </div>
-
-
-            <!-- Buttons -->
-            <div class="flex flex-col-reverse sm:flex-row
-                        items-stretch sm:items-center
-                        justify-end gap-3
-                        mt-8 pt-6
-                        border-t border-slate-200">
-
-                <!-- Cancel -->
-                <a
-                    href="{% url 'student_list' %}"
-                    class="inline-flex items-center justify-center
-                           gap-2 px-5 py-2.5
-                           rounded-lg
-                           border border-slate-200
-                           bg-white
-                           text-slate-600
-                           font-medium
-                           hover:bg-slate-50
-                           hover:text-slate-800
-                           transition
-                           focus:outline-none
-                           focus:ring-2
-                           focus:ring-slate-300">
-
-                    <i class="fa fa-arrow-left"
-                       aria-hidden="true"></i>
-
-                    Cancel
-
-                </a>
-
-
-                <!-- Save / Update -->
-                <button
-                    type="submit"
-                    class="inline-flex items-center justify-center
-                           gap-2 px-6 py-2.5
-                           bg-blue-900
-                           text-white
-                           rounded-lg
-                           font-medium
-                           hover:bg-blue-800
-                           transition
-                           shadow-sm
-                           focus:outline-none
-                           focus:ring-2
-                           focus:ring-blue-500
-                           focus:ring-offset-2">
-
-                    <i class="fa fa-save" aria-hidden="true"></i>
-
-                    {% if form.instance.pk %}
-                        Update Student
-                    {% else %}
-                        Save Student
-                    {% endif %}
-
-                </button>
-
-            </div>
-
-        </form>
 
     </div>
 

@@ -1,499 +1,290 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Student Management System</title>
+    <title>{% block title %}Student Management System{% endblock %}</title>
 
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f7fb;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 100vh;
+            background: #172554;
+            color: white;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 25px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .sidebar-header i {
+            font-size: 38px;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-header h4 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .sidebar-header p {
+            margin: 5px 0 0;
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        .sidebar-menu {
+            padding: 15px 10px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            padding: 13px 15px;
+            margin-bottom: 5px;
+            color: #dbeafe;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: 0.2s;
+            font-size: 15px;
+        }
+
+        .sidebar-menu a:hover {
+            background: #2563eb;
+            color: white;
+        }
+
+        .sidebar-menu a i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .logout-link {
+            margin-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.15);
+            padding-top: 18px !important;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            height: 70px;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+        }
+
+        .topbar h5 {
+            margin: 0;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #475569;
+        }
+
+        .user-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #2563eb;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .messages {
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 210px;
+            }
+
+            .main-content {
+                margin-left: 210px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
 </head>
 
-<body class="bg-slate-50 text-slate-800">
-
-    <div class="flex min-h-screen">
-
-        <!-- ==================== SIDEBAR ==================== -->
-        <aside class="hidden md:flex md:w-64 lg:w-64
-                      flex-shrink-0
-                      bg-blue-900 text-white
-                      flex-col">
-
-            <!-- Logo / Title -->
-            <div class="p-6 border-b border-blue-800">
-
-                <h1 class="text-xl font-bold">
-                    Student Management
-                </h1>
-
-                <p class="text-sm text-blue-200 mt-1">
-                    Admin Panel
-                </p>
-
-            </div>
-
-
-            <!-- Navigation -->
-            <nav class="p-4 flex-1">
-
-                <!-- Dashboard -->
-                <a
-                    href="{% url 'dashboard' %}"
-                    class="block px-4 py-3 rounded-lg mb-2
-                    {% if request.resolver_match.url_name == 'dashboard' %}
-                        bg-blue-800
-                    {% else %}
-                        hover:bg-blue-800
-                    {% endif %}">
-
-                    <i class="fa fa-home mr-2"
-                       style="font-size:20px"
-                       aria-hidden="true"></i>
-
-                    Dashboard
-
-                </a>
-
-
-                <!-- Students -->
-                <a
-                    href="{% url 'student_list' %}"
-                    class="block px-4 py-3 rounded-lg mb-2
-                    {% if request.resolver_match.url_name == 'student_list' %}
-                        bg-blue-800
-                    {% else %}
-                        hover:bg-blue-800
-                    {% endif %}">
-
-                    <i class="fa fa-users mr-2"
-                       style="font-size:20px"
-                       aria-hidden="true"></i>
-
-                    Students
-
-                </a>
-
-
-                <!-- Academics -->
-                <a
-                    href="{% url 'course_list' %}"
-                    class="block px-4 py-3 rounded-lg mb-2
-                    {% if request.resolver_match.url_name == 'course_list' or request.resolver_match.url_name == 'subject_list' %}
-                        bg-blue-800
-                    {% else %}
-                        hover:bg-blue-800
-                    {% endif %}">
-
-                    <i class="fa fa-graduation-cap mr-2"
-                       style="font-size:20px"
-                       aria-hidden="true"></i>
-
-                    Academics
-
-                </a>
-
-
-                <!-- Attendance -->
-                <a
-                    href="{% url 'attendance_list' %}"
-                    class="block px-4 py-3 rounded-lg hover:bg-blue-800 mb-2">
-
-                    <i class="fa fa-calendar-check-o mr-2"
-                       style="font-size:20px"
-                       aria-hidden="true"></i>
-
-                    Attendance
-
-                </a>
-
-
-                <!-- Fees -->
-                <a
-                    href="#"
-                    class="block px-4 py-3 rounded-lg hover:bg-blue-800 mb-2">
-
-                    <i class="fa fa-credit-card mr-2"
-                       style="font-size:20px"
-                       aria-hidden="true"></i>
-
-                    Fees
-
-                </a>
-
-
-                <!-- Payments -->
-                <a
-                    href="#"
-                    class="block px-4 py-3 rounded-lg hover:bg-blue-800 mb-2">
-
-                    <i class="fa fa-money mr-2"
-                       style="font-size:20px"
-                       aria-hidden="true"></i>
-
-                    Payments
-
-                </a>
-
-
-                <!-- Notices -->
-                <a
-                    href="#"
-                    class="block px-4 py-3 rounded-lg hover:bg-blue-800 mb-2">
-
-                    <i class="fa fa-bullhorn mr-2"
-                       style="font-size:20px"
-                       aria-hidden="true"></i>
-
-                    Notices
-
-                </a>
-
-
-                <!-- Reports -->
-                <a
-                    href="{% url 'report_dashboard' %}"
-                    class="block px-4 py-3 rounded-lg mb-2
-                    {% if request.resolver_match.url_name == 'report_dashboard' %}
-                        bg-blue-800
-                    {% else %}
-                        hover:bg-blue-800
-                    {% endif %}">
-
-                    <i class="fa fa-bar-chart mr-2"
-                       style="font-size:20px"
-                       aria-hidden="true"></i>
-
-                    Reports
-
-                </a>
-
-            </nav>
-
-
-            <!-- Logout -->
-            <nav class="p-4 border-t border-blue-800">
-
-                <a
-                    href="{% url 'logout' %}"
-                    class="block px-4 py-3 rounded-lg hover:bg-blue-800">
-
-                    <i class="fa fa-sign-out mr-2"
-                       style="font-size:20px"
-                       aria-hidden="true"></i>
-
-                    Logout
-
-                </a>
-
-            </nav>
-
-        </aside>
-
-
-        <!-- ==================== MAIN AREA ==================== -->
-        <div class="flex-1 min-w-0">
-
-
-            <!-- ==================== TOP NAVBAR ==================== -->
-            <header
-                class="min-h-16 bg-white border-b border-slate-200
-                       flex items-center justify-between
-                       px-4 sm:px-6 py-3 gap-3">
-
-                <!-- Left Side -->
-                <div class="flex items-center gap-3 min-w-0">
-
-                    <!-- Mobile Navigation -->
-                    <div class="md:hidden">
-
-                        <details class="relative">
-
-                            <summary
-                                class="list-none cursor-pointer
-                                       w-10 h-10
-                                       rounded-lg
-                                       bg-blue-900 text-white
-                                       flex items-center justify-center
-                                       hover:bg-blue-800">
-
-                                <i class="fa fa-bars"
-                                   aria-hidden="true"></i>
-
-                            </summary>
-
-
-                            <!-- Mobile Menu -->
-                            <div
-                                class="absolute left-0 top-12
-                                       w-52
-                                       bg-white
-                                       border border-slate-200
-                                       rounded-xl
-                                       shadow-lg
-                                       p-2
-                                       z-50">
-
-                                <a
-                                    href="{% url 'dashboard' %}"
-                                    class="flex items-center gap-3
-                                           px-3 py-2.5
-                                           rounded-lg
-                                           text-slate-700
-                                           hover:bg-slate-100">
-
-                                    <i class="fa fa-home w-5 text-center"></i>
-                                    Dashboard
-
-                                </a>
-
-
-                                <a
-                                    href="{% url 'student_list' %}"
-                                    class="flex items-center gap-3
-                                           px-3 py-2.5
-                                           rounded-lg
-                                           text-slate-700
-                                           hover:bg-slate-100">
-
-                                    <i class="fa fa-users w-5 text-center"></i>
-                                    Students
-
-                                </a>
-
-
-                                <a
-                                    href="{% url 'course_list' %}"
-                                    class="flex items-center gap-3
-                                           px-3 py-2.5
-                                           rounded-lg
-                                           text-slate-700
-                                           hover:bg-slate-100">
-
-                                    <i class="fa fa-graduation-cap w-5 text-center"></i>
-                                    Academics
-
-                                </a>
-
-
-                                <a
-                                    href="#"
-                                    class="flex items-center gap-3
-                                           px-3 py-2.5
-                                           rounded-lg
-                                           text-slate-700
-                                           hover:bg-slate-100">
-
-                                    <i class="fa fa-calendar-check-o w-5 text-center"></i>
-                                    Attendance
-
-                                </a>
-
-
-                                <a
-                                    href="#"
-                                    class="flex items-center gap-3
-                                           px-3 py-2.5
-                                           rounded-lg
-                                           text-slate-700
-                                           hover:bg-slate-100">
-
-                                    <i class="fa fa-credit-card w-5 text-center"></i>
-                                    Fees
-
-                                </a>
-
-
-                                <a
-                                    href="#"
-                                    class="flex items-center gap-3
-                                           px-3 py-2.5
-                                           rounded-lg
-                                           text-slate-700
-                                           hover:bg-slate-100">
-
-                                    <i class="fa fa-money w-5 text-center"></i>
-                                    Payments
-
-                                </a>
-
-
-                                <a
-                                    href="#"
-                                    class="flex items-center gap-3
-                                           px-3 py-2.5
-                                           rounded-lg
-                                           text-slate-700
-                                           hover:bg-slate-100">
-
-                                    <i class="fa fa-bullhorn w-5 text-center"></i>
-                                    Notices
-
-                                </a>
-
-
-                                <!-- Mobile Reports -->
-                                <a
-                                    href="{% url 'report_dashboard' %}"
-                                    class="flex items-center gap-3
-                                           px-3 py-2.5
-                                           rounded-lg
-                                           text-slate-700
-                                           hover:bg-slate-100">
-
-                                    <i class="fa fa-bar-chart w-5 text-center"></i>
-                                    Reports
-
-                                </a>
-
-
-                                <div class="border-t border-slate-200 my-2"></div>
-
-
-                                <a
-                                    href="{% url 'logout' %}"
-                                    class="flex items-center gap-3
-                                           px-3 py-2.5
-                                           rounded-lg
-                                           text-red-600
-                                           hover:bg-red-50">
-
-                                    <i class="fa fa-sign-out w-5 text-center"></i>
-                                    Logout
-
-                                </a>
-
-                            </div>
-
-                        </details>
-
-                    </div>
-
-
-                    <!-- Page Title -->
-                    <h2
-                        class="text-lg sm:text-xl font-semibold
-                               text-slate-800 truncate">
-
-                        {% block page_title %}Dashboard{% endblock %}
-
-                    </h2>
-
-                </div>
-
-
-                <!-- Right Side -->
-                <div class="flex items-center gap-2 sm:gap-5 flex-shrink-0">
-
-
-                    <!-- Search -->
-                    <div
-                        class="hidden sm:flex
-                               items-center
-                               relative
-                               border border-slate-200
-                               rounded-lg
-                               focus-within:ring-1
-                               focus-within:ring-blue-500">
-
-                        <i
-                            class="fa fa-search
-                                   text-slate-500
-                                   ml-3"
-                            aria-hidden="true">
-                        </i>
-
-                        <input
-                            type="text"
-                            placeholder="Search..."
-                            class="w-40 lg:w-64
-                                   px-3 py-2.5
-                                   text-sm
-                                   border-none
-                                   outline-none
-                                   bg-transparent">
-
-                    </div>
-
-
-                    <!-- Notification -->
-                    <button
-                        type="button"
-                        aria-label="Notifications"
-                        class="relative
-                               p-2
-                               text-slate-500
-                               hover:text-blue-900
-                               hover:bg-slate-100
-                               rounded-lg">
-
-                        <i class="fa fa-bell"
-                           aria-hidden="true"></i>
-
-                        <span
-                            class="absolute top-1 right-1
-                                   w-2 h-2
-                                   bg-red-500
-                                   rounded-full">
-                        </span>
-
-                    </button>
-
-
-                    <!-- Divider -->
-                    <div class="hidden sm:block h-8 w-px bg-slate-200"></div>
-
-
-                    <!-- User -->
-                    <div class="flex items-center gap-2 sm:gap-3">
-
-                        <div class="hidden sm:block text-right">
-
-                            <p class="text-sm font-medium text-slate-800">
-                                Admin
-                            </p>
-
-                            <p class="text-xs text-slate-500">
-                                Administrator
-                            </p>
-
-                        </div>
-
-
-                        <div
-                            class="w-9 h-9 rounded-full
-                                   bg-blue-900 text-white
-                                   flex items-center
-                                   justify-center
-                                   font-medium">
-
-                            A
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </header>
-
-
-            <!-- ==================== PAGE CONTENT ==================== -->
-            <main class="p-4 sm:p-6">
-
-                {% block content %}
-                {% endblock %}
-
-            </main>
-
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="sidebar-header">
+            <i class="fas fa-graduation-cap"></i>
+            <h4>SMS</h4>
+            <p>Student Management System</p>
         </div>
 
-    </div>
+        <nav class="sidebar-menu">
+
+            <!-- Dashboard -->
+            <a href="{% url 'dashboard' %}">
+                <i class="fas fa-chart-line"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <!-- Students -->
+            <a href="{% url 'student_list' %}">
+                <i class="fas fa-user-graduate"></i>
+                <span>Students</span>
+            </a>
+
+            <!-- Academics -->
+            <a href="{% url 'academics_dashboard' %}">
+                <i class="fas fa-school"></i>
+                <span>Academics</span>
+            </a>
+
+            <!-- Attendance -->
+            <a href="{% url 'attendance_dashboard' %}">
+                <i class="fas fa-calendar-check"></i>
+                <span>Attendance</span>
+            </a>
+
+            <!-- Fees -->
+            <a href="{% url 'fee_dashboard' %}">
+                <i class="fas fa-money-bill-wave"></i>
+                <span>Fees</span>
+            </a>
+
+            <!-- Reports -->
+            <a href="{% url 'reports:report_dashboard' %}">
+                <i class="fas fa-chart-pie"></i>
+                <span>Reports</span>
+            </a>
+
+            <!-- Teachers -->
+            <a href="{% url 'teacher_list' %}">
+                <i class="fas fa-chalkboard-teacher"></i>
+                <span>Teachers</span>
+            </a>
+
+            <!-- Admin -->
+            <a href="/admin/">
+                <i class="fas fa-user-shield"></i>
+                <span>Admin Panel</span>
+            </a>
+
+            <!-- Logout -->
+            <a href="{% url 'logout' %}" class="logout-link">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+
+        </nav>
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <h5>
+                {% block page_title %}
+                Student Management System
+                {% endblock %}
+            </h5>
+
+            <div class="user-info">
+                <div class="user-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+
+                <span>
+                    {% if request.user.is_authenticated %}
+                        {{ request.user.get_full_name|default:request.user.username }}
+                    {% endif %}
+                </span>
+            </div>
+
+        </header>
+
+
+        <section class="content">
+
+            <!-- Django Messages -->
+            {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show">
+                            {{ message }}
+
+                            <button type="button"
+                                    class="btn-close"
+                                    data-bs-dismiss="alert">
+                            </button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+
+            <!-- PAGE CONTENT -->
+            {% block content %}
+            {% endblock %}
+
+        </section>
+
+    </main>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    {% block extra_js %}{% endblock %}
 
 </body>
-
 </html>
