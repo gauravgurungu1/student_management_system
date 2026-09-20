@@ -1,0 +1,445 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+
+{% block title %}
+    {{ title }} | Student Management System
+{% endblock %}
+
+
+{% block branding %}
+
+    <div id="site-name">
+
+        <a href="{% url 'admin:index' %}">
+            Student Management System
+        </a>
+
+    </div>
+
+{% endblock %}
+
+
+{% block extrastyle %}
+
+    {{ block.super }}
+
+    <style>
+
+        /* =====================================
+           SMS SIDEBAR
+        ===================================== */
+
+        #sms-sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+
+            width: 250px;
+            height: 100vh;
+
+            background: #172554;
+            color: white;
+
+            z-index: 999999;
+
+            overflow-y: auto;
+
+            box-shadow: 3px 0 10px rgba(0, 0, 0, 0.15);
+        }
+
+
+        /* Header */
+
+        #sms-sidebar .sms-header {
+            padding: 25px 15px;
+
+            text-align: center;
+
+            border-bottom: 1px solid
+                rgba(255, 255, 255, 0.15);
+        }
+
+
+        #sms-sidebar .sms-header i {
+            display: block;
+
+            font-size: 38px;
+
+            margin-bottom: 10px;
+        }
+
+
+        #sms-sidebar .sms-header h3 {
+            margin: 0;
+
+            color: white;
+
+            font-size: 21px;
+
+            font-weight: 700;
+        }
+
+
+        #sms-sidebar .sms-header p {
+            margin: 5px 0 0;
+
+            color: #dbeafe;
+
+            font-size: 12px;
+        }
+
+
+        /* Menu */
+
+        #sms-sidebar .sms-menu {
+            padding: 15px 10px;
+        }
+
+
+        #sms-sidebar .sms-menu a {
+            display: flex;
+
+            align-items: center;
+
+            gap: 13px;
+
+            padding: 13px 15px;
+
+            margin-bottom: 5px;
+
+            color: #dbeafe;
+
+            text-decoration: none;
+
+            border-radius: 8px;
+
+            font-size: 15px;
+
+            transition: all 0.2s ease;
+        }
+
+
+        #sms-sidebar .sms-menu a:hover {
+            background: #2563eb;
+
+            color: white;
+        }
+
+
+        #sms-sidebar .sms-menu a i {
+            width: 20px;
+
+            text-align: center;
+
+            font-size: 15px;
+        }
+
+
+        /* =====================================
+           MOVE DJANGO HEADER
+        ===================================== */
+
+        #header {
+            margin-left: 250px !important;
+
+            width: calc(100% - 250px) !important;
+        }
+
+
+        /* =====================================
+           MOVE DJANGO MAIN CONTENT
+        ===================================== */
+
+        #main {
+            margin-left: 250px !important;
+        }
+
+
+        #content {
+            margin-left: 0 !important;
+        }
+
+
+        /* =====================================
+           USER TOOLS
+        ===================================== */
+
+        #user-tools {
+            float: right !important;
+
+            text-align: right !important;
+        }
+
+
+        /* =====================================
+           MOBILE
+        ===================================== */
+
+        @media (max-width: 768px) {
+
+            #sms-sidebar {
+                width: 210px;
+            }
+
+
+            #header {
+                margin-left: 210px !important;
+
+                width: calc(100% - 210px) !important;
+            }
+
+
+            #main {
+                margin-left: 210px !important;
+            }
+
+        }
+/* =====================================
+   LOGOUT
+===================================== */
+
+#sms-sidebar .sms-logout {
+    margin-top: 20px !important;
+    padding-top: 16px !important;
+
+    border-top: 1px solid
+        rgba(255, 255, 255, 0.20);
+
+    color: #fca5a5 !important;
+}
+
+
+#sms-sidebar .sms-logout:hover {
+    background: #dc2626 !important;
+    color: white !important;
+}
+
+
+#sms-sidebar .sms-logout i {
+    color: #fca5a5;
+}
+
+
+#sms-sidebar .sms-logout:hover i {
+    color: white;
+}
+/* =====================================
+   ADMIN LOGIN PAGE
+===================================== */
+
+body.login #sms-sidebar {
+    display: none !important;
+}
+
+
+body.login #header {
+    margin-left: 0 !important;
+    width: 100% !important;
+}
+
+
+body.login #main {
+    margin-left: 0 !important;
+}
+
+
+body.login #content {
+    margin-left: 0 !important;
+}
+
+
+body.login .submit-row {
+    display: flex;
+    justify-content: center;
+}
+
+
+body.login #login {
+    width: 400px;
+    max-width: 90%;
+    margin: 80px auto;
+}
+
+
+body.login #content-main {
+    width: 100%;
+}
+
+
+body.login .form-row {
+    padding: 10px 0;
+}
+
+
+body.login .form-row input {
+    width: 100%;
+    box-sizing: border-box;
+}
+    </style>
+
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+{% endblock %}
+
+
+{% block extrabody %}
+
+    {{ block.super }}
+
+
+    <!-- =====================================
+         SMS SIDEBAR
+    ====================================== -->
+
+    <aside id="sms-sidebar">
+
+
+        <!-- Header -->
+
+        <div class="sms-header">
+
+            <i class="fas fa-graduation-cap"></i>
+
+            <h3>
+                SMS
+            </h3>
+
+            <p>
+                Student Management System
+            </p>
+
+        </div>
+
+
+        <!-- Menu -->
+
+        <nav class="sms-menu">
+
+
+            <!-- Dashboard -->
+
+            <a href="{% url 'dashboard' %}">
+
+                <i class="fas fa-chart-line"></i>
+
+                <span>
+                    Dashboard
+                </span>
+
+            </a>
+
+
+            <!-- Students -->
+
+            <a href="{% url 'student_list' %}">
+
+                <i class="fas fa-user-graduate"></i>
+
+                <span>
+                    Students
+                </span>
+
+            </a>
+
+
+            <!-- Academics -->
+
+            <a href="{% url 'academics_dashboard' %}">
+
+                <i class="fas fa-school"></i>
+
+                <span>
+                    Academics
+                </span>
+
+            </a>
+
+
+            <!-- Attendance -->
+
+            <a href="{% url 'attendance_dashboard' %}">
+
+                <i class="fas fa-calendar-check"></i>
+
+                <span>
+                    Attendance
+                </span>
+
+            </a>
+
+
+            <!-- Fees -->
+
+            <a href="{% url 'fee_dashboard' %}">
+
+                <i class="fas fa-money-bill-wave"></i>
+
+                <span>
+                    Fees
+                </span>
+
+            </a>
+
+
+            <!-- Reports -->
+
+            <a href="{% url 'reports:report_dashboard' %}">
+
+                <i class="fas fa-chart-pie"></i>
+
+                <span>
+                    Reports
+                </span>
+
+            </a>
+
+
+            <!-- Teachers -->
+
+            <a href="{% url 'teacher_list' %}">
+
+                <i class="fas fa-chalkboard-teacher"></i>
+
+                <span>
+                    Teachers
+                </span>
+
+            </a>
+
+
+            <!-- Admin Panel -->
+
+            <a href="{% url 'admin:index' %}">
+
+                <i class="fas fa-user-shield"></i>
+
+                <span>
+                    Admin Panel
+                </span>
+
+            </a>
+
+
+            <!-- Logout -->
+
+            <a href="{% url 'logout' %}" class="sms-logout">
+
+    <i class="fas fa-sign-out-alt"></i>
+
+    <span>
+        Logout
+    </span>
+
+</a>
+
+
+        </nav>
+
+    </aside>
+
+{% endblock %}

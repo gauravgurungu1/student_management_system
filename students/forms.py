@@ -1,32 +1,57 @@
 from django import forms
+from django.contrib.auth.models import User
 
-from .models import Student
+from .models import Student, Guardian
 
 
 class StudentForm(forms.ModelForm):
+    first_name = forms.CharField(max_length=150)
+    last_name = forms.CharField(max_length=150, required=False)
+    email = forms.EmailField(required=False)
 
     class Meta:
         model = Student
-        fields = ['name', 'email', 'phone', 'course']
+        fields = [
+            'student_id',
+            'date_of_birth',
+            'gender',
+            'address',
+            'phone',
+            'guardian',
+            'academic_year',
+            'class_name',
+            'section',
+            'is_active',
+        ]
 
         widgets = {
-            'name': forms.TextInput(attrs={
-                'class': 'w-full px-4 py-3 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
-                'placeholder': 'Enter student name'
-            }),
-
-            'email': forms.EmailInput(attrs={
-                'class': 'w-full px-4 py-3 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
-                'placeholder': 'Enter email address'
-            }),
-
-            'phone': forms.TextInput(attrs={
-                'class': 'w-full px-4 py-3 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
-                'placeholder': 'Enter phone number'
-            }),
-
-            'course': forms.Select(attrs={
-                'class': 'w-full px-4 py-3 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
-            }),
-            
+            'date_of_birth': forms.DateInput(
+                attrs={'type': 'date'}
+            ),
+            'address': forms.Textarea(
+                attrs={'rows': 3}
+            ),
         }
+
+    def save(self, commit=True):
+        student = super().save(commit=False)
+
+        if not student.user_id:
+            user = User.objects.create_user(
+                username=self.cleaned_data['student_id'],
+                first_name=self.cleaned_data['first_name'],
+                last_name=self.cleaned_data['last_name'],
+                email=self.cleaned_data['email'],
+            )
+            student.user = user
+        else:
+            user = student.user
+            user.first_name = self.cleaned_data['first_name']
+            user.last_name = self.cleaned_data['last_name']
+            user.email = self.cleaned_data['email']
+            user.save()
+
+        if commit:
+            student.save()
+
+        return student

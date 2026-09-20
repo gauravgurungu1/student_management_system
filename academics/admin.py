@@ -1,13 +1,26 @@
 from django.contrib import admin
-from .models import Course,Subject
 
-@admin.register(Course)
-class CourseAdmin(admin.ModelAdmin) : 
-    list_display = ("name" , "code" , "duration_years")
-    search_fields = ("name" , "code")
+from .models import AcademicYear, Class, Section, Subject
+
+
+@admin.register(AcademicYear)
+class AcademicYearAdmin(admin.ModelAdmin):
+    list_display = ('name', 'start_date', 'end_date', 'is_current')
+    list_filter = ('is_current',)
+
+
+@admin.register(Class)
+class ClassAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+
+
+@admin.register(Section)
+class SectionAdmin(admin.ModelAdmin):
+    list_display = ('name', 'class_name')
+    list_filter = ('class_name',)
+
 
 @admin.register(Subject)
-class SubjectAdmin(admin.ModelAdmin) :
-    list_display = ("name" , "code" , "semester" , "credit_hours")
-    search_fields = ("name" , "code")
-    list_filter = ("semester" , "credit_hours")
+class SubjectAdmin(admin.ModelAdmin):
+    list_display = ('code', 'name', 'class_name')
+    list_filter = ('class_name',)

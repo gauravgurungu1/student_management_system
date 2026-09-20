@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">Attendance</h2>
+            <p class="text-muted mb-0">
+                View student attendance records
+            </p>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+
+        <div class="card-body">
+
+            {% if attendance_records %}
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle">
+
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Remarks</th>
+                                <th>Marked By</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            {% for record in attendance_records %}
+
+                                <tr>
+
+                                    <td>
+                                        {{ record.student }}
+                                    </td>
+
+                                    <td>
+                                        {{ record.date }}
+                                    </td>
+
+                                    <td>
+                                        {{ record.get_status_display }}
+                                    </td>
+
+                                    <td>
+                                        {{ record.remarks|default:"-" }}
+                                    </td>
+
+                                    <td>
+                                        {% if record.marked_by %}
+                                            {{ record.marked_by }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+
+                                </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            {% else %}
+
+                <div class="text-center py-5">
+
+                    <h5>No attendance records found</h5>
+
+                    <p class="text-muted">
+                        Attendance records will appear here.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

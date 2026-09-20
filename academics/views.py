@@ -1,139 +1,94 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, redirect, render
 
-from .models import Course, Subject
-from .forms import CourseForm, SubjectForm
-
-
-# =========================
-# COURSE CRUD
-# =========================
-
-# READ - Show all courses
-def course_list(request):
-    courses = Course.objects.all()
-    return render(
-        request,
-        'academics/course_list.html',
-        {'courses': courses}
-    )
+from .models import AcademicYear, Class, Section, Subject
+from .forms import (
+    AcademicYearForm,
+    ClassForm,
+    SectionForm,
+    SubjectForm,
+)
 
 
-# CREATE - Add a new course
-def course_create(request):
-    if request.method == 'POST':
-        form = CourseForm(request.POST)
+@login_required
+def academics_dashboard(request):
+    context = {
+        'academic_years': AcademicYear.objects.all(),
+        'classes': Class.objects.all(),
+        'sections': Section.objects.select_related('class_name').all(),
+        'subjects': Subject.objects.select_related('class_name').all(),
+    }
 
-        if form.is_valid():
-            form.save()
-            return redirect('course_list')
-    else:
-        form = CourseForm()
-
-    return render(
-        request,
-        'academics/course_form.html',
-        {'form': form}
-    )
+    return render(request, 'academics/dashboard.html', context)
 
 
-# UPDATE - Edit an existing course
-def course_update(request, id):
-    course = get_object_or_404(Course, id=id)
+@login_required
+def academic_year_create(request):
+    form = AcademicYearForm(request.POST or None)
 
-    if request.method == 'POST':
-        form = CourseForm(request.POST, instance=course)
+    if form.is_valid():
+        form.save()
+        messages.success(request, 'Academic year created successfully.')
+        return redirect('academics_dashboard')
 
-        if form.is_valid():
-            form.save()
-            return redirect('course_list')
-    else:
-        form = CourseForm(instance=course)
-
-    return render(
-        request,
-        'academics/course_form.html',
-        {'form': form}
-    )
+    return render(request, 'academics/form.html', {
+        'form': form,
+        'title': 'Add Academic Year',
+    })
 
 
-# DELETE - Delete an existing course
-def course_delete(request, id):
-    course = get_object_or_404(Course, id=id)
+@login_required
+def class_create(request):
+    form = ClassForm(request.POST or None)
 
-    if request.method == 'POST':
-        course.delete()
-        return redirect('course_list')
+    if form.is_valid():
+        form.save()
+        messages.success(request, 'Class created successfully.')
+        return redirect('academics_dashboard')
 
-    return render(
-        request,
-        'academics/course_confirm_delete.html',
-        {'course': course}
-    )
-
-
-# =========================
-# SUBJECT CRUD
-# =========================
-
-# READ - Show all subjects
-def subject_list(request):
-    subjects = Subject.objects.select_related('course').all()
-
-    return render(
-        request,
-        'academics/subject_list.html',
-        {'subjects': subjects}
-    )
+    return render(request, 'academics/form.html', {
+        'form': form,
+        'title': 'Add Class',
+    })
 
 
-# CREATE - Add a new subject
+@login_required
+def section_create(request):
+    form = SectionForm(request.POST or None)
+
+    if form.is_valid():
+        form.save()
+        messages.success(request, 'Section created successfully.')
+        return redirect('academics_dashboard')
+
+    return render(request, 'academics/form.html', {
+        'form': form,
+        'title': 'Add Section',
+    })
+
+
+@login_required
 def subject_create(request):
-    if request.method == 'POST':
-        form = SubjectForm(request.POST)
+    form = SubjectForm(request.POST or None)
 
-        if form.is_valid():
-            form.save()
-            return redirect('subject_list')
-    else:
-        form = SubjectForm()
+    if form.is_valid():
+        form.save()
+        messages.success(request, 'Subject created successfully.')
+        return redirect('academics_dashboard')
 
-    return render(
-        request,
-        'academics/subject_form.html',
-        {'form': form}
-    )
+    return render(request, 'academics/form.html', {
+        'form': form,
+        'title': 'Add Subject',
+    })
 
 
-# UPDATE - Edit an existing subject
-def subject_update(request, id):
-    subject = get_object_or_404(Subject, id=id)
-
-    if request.method == 'POST':
-        form = SubjectForm(request.POST, instance=subject)
-
-        if form.is_valid():
-            form.save()
-            return redirect('subject_list')
-    else:
-        form = SubjectForm(instance=subject)
-
-    return render(
-        request,
-        'academics/subject_form.html',
-        {'form': form}
-    )
-
-
-# DELETE - Delete an existing subject
-def subject_delete(request, id):
-    subject = get_object_or_404(Subject, id=id)
+@login_required
+def subject_delete(request, pk):
+    subject = get_object_or_404(Subject, pk=pk)
 
     if request.method == 'POST':
         subject.delete()
-        return redirect('subject_list')
+        messages.success(request, 'Subject deleted successfully.')
 
-    return render(
-        request,
-        'academics/subject_confirm_delete.html',
-        {'subject': subject}
-    )
+    return redirect('academics_dashboard')
