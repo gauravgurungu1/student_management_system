@@ -60,7 +60,8 @@ urlpatterns = [
         'payments/',
         include('payments.urls')
     ),
-        # Reports
+
+    # Reports
     path(
         'reports/',
         include('reports.urls')

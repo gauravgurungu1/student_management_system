@@ -20,16 +20,38 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('date', models.DateField()),
-                ('status', models.CharField(choices=[('present', 'Present'), ('absent', 'Absent'), ('late', 'Late')], max_length=10)),
+                ('status', models.CharField(
+                    choices=[
+                        ('present', 'Present'),
+                        ('absent', 'Absent'),
+                        ('late', 'Late')
+                    ],
+                    max_length=10
+                )),
                 ('remarks', models.CharField(blank=True, max_length=255)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
-                ('marked_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='marked_attendances', to=settings.AUTH_USER_MODEL)),
-                ('student', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='attendances', to='students.student')),
+                ('marked_by', models.ForeignKey(
+                    blank=True,
+                    null=True,
+                    on_delete=django.db.models.deletion.SET_NULL,
+                    related_name='marked_attendances',
+                    to=settings.AUTH_USER_MODEL
+                )),
+                ('student', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE,
+                    related_name='attendances',
+                    to='students.student'
+                )),
             ],
             options={
                 'ordering': ['-date', 'student'],
-                'constraints': [models.UniqueConstraint(fields=('student', 'date'), name='unique_student_attendance_per_day')],
+                'constraints': [
+                    models.UniqueConstraint(
+                        fields=('student', 'date'),
+                        name='unique_student_attendance_per_day'
+                    )
+                ],
             },
         ),
     ]
